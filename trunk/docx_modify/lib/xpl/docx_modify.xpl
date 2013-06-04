@@ -22,9 +22,7 @@
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
   
   <p:input port="xslt"/>
-  <p:output port="result" primary="true" />
-  <p:serialization port="result" indent="true" omit-xml-declaration="false"/>
-
+  
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.le-tex.de/xproc-util/xslt-mode/xslt-mode.xpl" />
   <p:import href="http://transpect.le-tex.de/xproc-util/store-debug/store-debug.xpl" />
@@ -180,8 +178,6 @@
     <p:with-option name="base-uri" select="$debug-dir-uri" />
   </letex:store-debug>
   
-  <p:exec command="sleep" args="6" result-is-xml="false"/>
-  
   <p:sink/>
   
   <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip">
@@ -194,6 +190,23 @@
     </p:input>
   </cx:zip>
   
-  
-  
+  <p:choose>
+    <p:when test="not($debug = 'yes')">
+      <cxf:delete recursive="true" fail-on-error="false">
+        <p:with-option name="href" select="concat($file, '.tmp')"/>
+      </cxf:delete>
+
+      <cxf:delete recursive="true" fail-on-error="false">
+        <p:with-option name="href" select="concat($file, '.out')"/>
+      </cxf:delete>
+    </p:when>
+    <p:otherwise>
+      <p:sink>
+        <p:input port="source">
+          <p:pipe port="result" step="zip-manifest"/>
+        </p:input>
+      </p:sink>
+    </p:otherwise>
+  </p:choose>
+
 </p:declare-step>
