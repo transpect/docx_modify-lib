@@ -17,7 +17,7 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="@xml:base" mode="default">
+  <xsl:template match="@xml:base" mode="modify">
     <xsl:attribute name="{name()}" select="replace(., '\.docx.tmp', $out-dir-replacement)"/>
   </xsl:template>
 
