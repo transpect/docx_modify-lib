@@ -114,16 +114,6 @@
     <p:with-param name="srcpaths" select="'no'"/>
   </letex:xslt-mode>
   
-  <letex:xslt-mode msg="yes" mode="default">
-    <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
-    <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
-    <p:input port="models"><p:empty/></p:input>
-    <p:with-option name="prefix" select="concat('docx_modify/', $basename, '/1')"/>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-param name="srcpaths" select="'no'"/>
-  </letex:xslt-mode>
-
   <letex:xslt-mode msg="yes" mode="modify">
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
     <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
