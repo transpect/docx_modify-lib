@@ -30,19 +30,19 @@
     <xsl:sequence select="local-name()"/>
   </xsl:template>
   
-  <xsl:template match="w:rFonts[@w:ascii]" mode="signature" as="xs:string">
+  <xsl:template match="w:rFonts[@w:ascii]" mode="signature" as="xs:string?">
     <xsl:sequence select="@w:ascii"/>
   </xsl:template>
   
-  <xsl:template match="w:u" mode="signature" as="xs:string">
+  <xsl:template match="w:u" mode="signature" as="xs:string?">
     <xsl:sequence select="string-join((local-name(), @w:val), '_')"/>
   </xsl:template>
   
-  <xsl:template match="w:shd" mode="signature" as="xs:string">
+  <xsl:template match="w:shd" mode="signature" as="xs:string?">
     <xsl:sequence select="string-join((local-name(), @w:fill), '_')"/>
   </xsl:template>
   
-  <xsl:template match="w:sz | w:color | w:lang" mode="signature" as="xs:string">
+  <xsl:template match="w:sz | w:color | w:lang" mode="signature" as="xs:string?">
     <xsl:sequence select="@w:val"/>
   </xsl:template>
   

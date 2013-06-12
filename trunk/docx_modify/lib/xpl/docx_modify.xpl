@@ -17,7 +17,9 @@
   type="docx2hub:modify"
   >
   
-  <p:option name="file" required="true"/>
+  <p:option name="file" required="true">
+    <p:documentation>As required by docx2hub</p:documentation>
+  </p:option>
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
   
@@ -183,11 +185,14 @@
   <p:choose>
     <p:when test="not($debug = 'yes')">
       <cxf:delete recursive="true" fail-on-error="false">
-        <p:with-option name="href" select="concat($file, '.tmp')"/>
+        <p:with-option name="href" select="/c:files/@xml:base" >
+          <p:pipe step="proto-unzip" port="result"/>
+        </p:with-option>
       </cxf:delete>
-
       <cxf:delete recursive="true" fail-on-error="false">
-        <p:with-option name="href" select="concat($file, '.out')"/>
+        <p:with-option name="href" select="replace(/c:files/@xml:base, '\.tmp/?$', '.out')" >
+          <p:pipe step="proto-unzip" port="result"/>
+        </p:with-option>
       </cxf:delete>
     </p:when>
     <p:otherwise>
