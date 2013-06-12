@@ -57,6 +57,16 @@
       <font-replacement name="ZF_{string-join($prelim[not(name() = 'color')], '_')}">
         <xsl:sequence select="$prelim"/>
       </font-replacement>
+      <xsl:if test="not($prelim[name() = 'position'])">
+        <font-replacement name="ZF_{string-join($prelim[not(name() = 'color')], '_')}_superscript">
+          <xsl:sequence select="$prelim"/>
+          <xsl:attribute name="position" select="'superscript'"/>
+        </font-replacement>
+        <font-replacement name="ZF_{string-join($prelim[not(name() = 'color')], '_')}_subscript">
+          <xsl:sequence select="$prelim"/>
+          <xsl:attribute name="position" select="'subscript'"/>
+        </font-replacement>
+      </xsl:if>
     </xsl:if>
   </xsl:template>
   
@@ -108,7 +118,11 @@
   <xsl:function name="w:matching-font-replacement" as="element(font-replacement)?">
     <xsl:param name="rPr" as="element(w:rPr)"/>
     <xsl:param name="repls" as="element(font-replacement)*"/>
-    <xsl:sequence select="$repls[@color = $rPr/w:color/@w:val]"/>
+    <xsl:sequence select="$repls[@color = $rPr/w:color/@w:val]
+                                [if ($rPr/w:vertAlign/@w:val = ('superscript', 'subscript'))
+                                 then @position = $rPr/w:vertAlign/@w:val
+                                 else not(@position)
+                                ]"/>
   </xsl:function>
  
   <xsl:template match="w:r[w:t]/w:rPr[*]" mode="modify">
