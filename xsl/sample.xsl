@@ -39,8 +39,8 @@
       <xsl:apply-templates select="@*, node()" mode="#current"/>
       <xsl:variable name="docroot" select="root()" as="document-node(element(w:root))"/>
       <xsl:for-each select="$run-signatures">
-        <w:style w:styleId="ltx_{.}" w:type="character">
-          <w:name w:val="ltx_{.}"/>
+        <w:style w:styleId="ZF_{.}" w:type="character">
+          <w:name w:val="ZF_{.}"/>
           <xsl:sequence select="(key('run-by-props', ., $docroot))[1]"/>
         </w:style>
       </xsl:for-each>

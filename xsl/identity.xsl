@@ -9,6 +9,10 @@
   exclude-result-prefixes="xs rel"
   version="2.0">
   
+  <xsl:import href="http://transpect.le-tex.de/xslt-util/colors/colors.xsl"/>
+  
+  <xsl:param name="debug" select="'no'"/>
+  
   <xsl:param name="out-dir-replacement" select="'.docx.out'"/>
   
   <xsl:template match="* | @*" mode="#all">
