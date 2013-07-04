@@ -38,6 +38,4 @@
   
   <xsl:template match="@xml:base" mode="export"/>
 
-  <xsl:template match="@mc:Ignorable" mode="export"/>
-    
 </xsl:stylesheet>
