@@ -4,13 +4,14 @@
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
   xmlns:letex="http://www.le-tex.de/namespace"
-  exclude-result-prefixes="xs letex"
+  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  exclude-result-prefixes="xs letex docx2hub"
   version="2.0">
   
   <xsl:import href="identity.xsl"/>
   <xsl:import href="props.xsl"/>
 
-  <xsl:template match="w:root" mode="modify">
+  <xsl:template match="w:root" mode="docx2hub:modify">
     <xsl:variable name="font-replacements" as="element(font-replacements)">
       <font-replacements>
         <xsl:apply-templates select="w:settings/w:docVars/w:docVar[matches(@w:name, '^ltx_ebup_fonts_replace_\d+')]"
@@ -70,7 +71,7 @@
     </xsl:if>
   </xsl:template>
   
-  <xsl:template match="w:styles" mode="modify">
+  <xsl:template match="w:styles" mode="docx2hub:modify">
     <xsl:param name="font-replacements" as="element(font-replacements)" tunnel="yes"/>
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*, *" mode="#current"/>
@@ -113,7 +114,7 @@
     <w:rFonts w:ascii="{.}" w:hAnsi="{.}" />
   </xsl:template>
   
-  <xsl:template match="w:spacing" mode="modify"/>
+  <xsl:template match="w:spacing" mode="docx2hub:modify"/>
  
   <xsl:function name="w:matching-font-replacement" as="element(font-replacement)?">
     <xsl:param name="rPr" as="element(w:rPr)"/>
@@ -125,7 +126,7 @@
                                 ]"/>
   </xsl:function>
  
-  <xsl:template match="w:r[w:t]/w:rPr[*]" mode="modify">
+  <xsl:template match="w:r[w:t]/w:rPr[*]" mode="docx2hub:modify">
     <xsl:param name="font-replacements" as="element(font-replacements)" tunnel="yes"/>
     <xsl:copy>
       <xsl:variable name="matching-replacement" select="w:matching-font-replacement(., $font-replacements/*)" as="element(font-replacement)*"/>

@@ -4,13 +4,19 @@
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
   xmlns:letex="http://www.le-tex.de/namespace"
-  exclude-result-prefixes="xs letex"
+  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  exclude-result-prefixes="xs letex docx2hub"
   version="2.0">
   
   <xsl:import href="identity.xsl"/>
  
+  <xsl:template match="* | @*" mode="bookmarkstart bookmarkpagefinal listchange">
+    <xsl:copy>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
   
-  <xsl:template match="w:body" mode="modify">
+  <xsl:template match="w:body" mode="docx2hub:modify">
     <xsl:variable name="bookmarkstart">
       <xsl:apply-templates select="." mode="bookmarkstart"/>
     </xsl:variable>

@@ -23,15 +23,40 @@
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
   
-  <p:input port="xslt"/>
-  
+  <p:input port="xslt">
+    <p:documentation>XSLT that transforms the compound OOXML document (all files assembled below a single w:root element,
+      as produced by the step named 'insert-xpath') to a target compound document. The stylesheet may of course import
+    other stylesheets or use multiple passes in different modes. In order to facilitate this common processing pattern,
+    an XProc pipeline may also be supplied for the compound→compound transformation part. This pipeline will be dynamically
+    executed by this pipeline. Please note that your stylesheet must use named modes if you are using an letex:xslt-mode 
+    pipeline.</p:documentation>
+  </p:input>
+  <p:input port="xpl">
+    <p:document href="single-pass_modify.xpl"/>
+    <p:documentation>See the 'xslt' port’s documentation. You may supply another pipeline that will be executed instead of 
+      the default single-pass modify pipeline. You pipeline typically consists of chained transformations in different modes, as invoked by 
+    letex:xslt-mode. Of course you can supply other pipelines with the same signature (single w:root input/output documents).</p:documentation>
+  </p:input>
+  <p:input port="params" kind="parameter" primary="true">
+    <p:documentation>Arbitrary parameters that will be passed to the dynamically executed pipeline.</p:documentation>
+  </p:input>
+  <p:input port="options">
+    <p:documentation>Options to the modifying XProc pipeline.</p:documentation>
+  </p:input>
+
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.le-tex.de/xproc-util/xslt-mode/xslt-mode.xpl" />
   <p:import href="http://transpect.le-tex.de/xproc-util/store-debug/store-debug.xpl" />
   <p:import href="http://transpect.le-tex.de/calabash-extensions/ltx-lib.xpl" />
   
   <p:variable name="basename" select="replace($file, '^(.+?)([^/\\]+)\.docx$', '$2')"/>
-  
+
+  <p:parameters name="consolidate-params">
+    <p:input port="parameters">
+      <p:pipe port="params" step="docx_modify"/>
+    </p:input>
+  </p:parameters>
+
   <letex:unzip name="proto-unzip">
     <p:with-option name="zip" select="$file" />
     <p:with-option name="dest-dir" select="concat($file, '.tmp')"><p:empty/></p:with-option>
@@ -88,7 +113,7 @@
   
   <p:sink/>
   
-  <p:add-attribute  name="params" attribute-name="value" match="/c:param-set/c:param[@name = 'error-msg-file-path']">
+  <p:add-attribute name="params" attribute-name="value" match="/c:param-set/c:param[@name = 'error-msg-file-path']">
     <p:with-option name="attribute-value" select="replace( static-base-uri(), '/wml2hub.xpl', '' )"/>
     <p:input port="source">
       <p:inline>
@@ -104,7 +129,7 @@
   
   <p:sink/>
   
-  <letex:xslt-mode msg="yes" mode="insert-xpath">
+  <letex:xslt-mode msg="yes" mode="insert-xpath" name="compound-document">
     <p:input port="source"><p:pipe step="document" port="result" /></p:input>
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
     <p:input port="stylesheet"><p:document href="http://transpect.le-tex.de/docx2hub/main.xsl"/></p:input>
@@ -115,7 +140,74 @@
     <p:with-param name="srcpaths" select="'no'"/>
   </letex:xslt-mode>
   
-  <letex:xslt-mode msg="yes" mode="modify">
+  <p:wrap wrapper="cx:document" match="/">
+    <p:input port="source">
+      <p:pipe step="compound-document" port="result"/>
+    </p:input>
+  </p:wrap>
+  <p:add-attribute name="source" attribute-name="port" attribute-value="source" match="/*"/>
+  
+  <p:sink/>
+  
+  <p:wrap wrapper="cx:document" match="/">
+    <p:input port="source">
+      <p:pipe port="xslt" step="docx_modify"/>
+    </p:input>
+  </p:wrap>
+  <p:add-attribute name="stylesheet" attribute-name="port" attribute-value="stylesheet" match="/*"/>
+  
+  <p:sink/>
+  
+  <p:wrap wrapper="cx:document" match="/">
+    <p:input port="source">
+      <p:pipe step="consolidate-params" port="result"/>
+    </p:input>
+  </p:wrap>
+  <p:add-attribute name="parameters" attribute-name="port" attribute-value="parameters" match="/*"/>
+  
+  <p:sink/>
+  
+  <p:xslt name="options" template-name="main">
+    <p:documentation>Options for the dynamically executed pipeline. You may supply additional
+    options using a cx:options document with cx:option name/value entries.</p:documentation>
+    <p:with-param name="debug" select="$debug"/>
+    <p:with-param name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:input port="parameters"><p:empty/></p:input>
+    <p:input port="source">
+      <p:pipe step="docx_modify" port="options"/> 
+    </p:input>
+    <p:input port="stylesheet">
+      <p:inline>
+        <xsl:stylesheet version="2.0">
+          <xsl:param name="debug" as="xs:string"/>
+          <xsl:param name="debug-dir-uri" as="xs:string"/>
+          <xsl:template name="main">
+            <cx:options>
+              <cx:option name="debug" value="{$debug}"/>
+              <cx:option name="debug-dir-uri" value="{$debug-dir-uri}"/>
+              <xsl:sequence select="collection()/cx:options/cx:option"/>
+            </cx:options>
+          </xsl:template>
+        </xsl:stylesheet>
+      </p:inline>
+    </p:input>
+  </p:xslt>
+  
+  <cx:eval name="modify" detailed="true">
+    <p:input port="pipeline">
+      <p:pipe port="xpl" step="docx_modify"/>
+    </p:input>
+    <p:input port="source">
+      <p:pipe port="result" step="stylesheet"/>
+      <p:pipe port="result" step="source"/>
+      <p:pipe port="result" step="parameters"/>
+    </p:input>
+    <p:input port="options">
+      <p:pipe port="result" step="options"/>
+    </p:input>
+  </cx:eval>
+
+  <letex:xslt-mode msg="yes" mode="docx2hub:modify">
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
     <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
     <p:input port="models"><p:empty/></p:input>
@@ -125,7 +217,7 @@
     <p:with-param name="srcpaths" select="'no'"/>
   </letex:xslt-mode>
   
-  <letex:xslt-mode msg="yes" mode="export" name="export">
+  <letex:xslt-mode msg="yes" mode="docx2hub:export" name="export">
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
     <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
     <p:input port="models"><p:empty/></p:input>
