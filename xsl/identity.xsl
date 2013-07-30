@@ -6,7 +6,8 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  exclude-result-prefixes="xs rel"
+  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  exclude-result-prefixes="xs rel docx2hub"
   version="2.0">
   
   <xsl:import href="http://transpect.le-tex.de/xslt-util/colors/colors.xsl"/>
@@ -15,27 +16,27 @@
   
   <xsl:param name="out-dir-replacement" select="'.docx.out'"/>
   
-  <xsl:template match="* | @*" mode="#all">
+  <xsl:template match="* | @*" mode="docx2hub:identity docx2hub:modify docx2hub:export">
     <xsl:copy>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="@xml:base" mode="modify">
+  <xsl:template match="@xml:base" mode="docx2hub:modify">
     <xsl:attribute name="{name()}" select="replace(., '\.docx.tmp', $out-dir-replacement)"/>
   </xsl:template>
 
 
-  <xsl:template match="w:root | *[rel:Relationships]" mode="export" priority="2">
+  <xsl:template match="w:root | *[rel:Relationships]" mode="docx2hub:export" priority="2">
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
-  <xsl:template match="*[@xml:base]" mode="export">
+  <xsl:template match="*[@xml:base]" mode="docx2hub:export">
     <xsl:result-document href="{@xml:base}">
       <xsl:next-match/>
     </xsl:result-document>
   </xsl:template>
   
-  <xsl:template match="@xml:base" mode="export"/>
+  <xsl:template match="@xml:base" mode="docx2hub:export"/>
 
 </xsl:stylesheet>

@@ -3,13 +3,14 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  exclude-result-prefixes="xs"
+  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  exclude-result-prefixes="xs docx2hub"
   version="2.0">
   
   <xsl:import href="identity.xsl"/>
   <xsl:import href="props.xsl"/>
   
-  <xsl:template match="w:root" mode="modify">
+  <xsl:template match="w:root" mode="docx2hub:modify">
     <xsl:variable name="runs" as="element(w:r)*" 
       select="w:document//w:r[w:t]"/>
     <xsl:variable name="prop-signatures" select="for $r in $runs/w:rPr return w:prop-signature($r)" as="xs:string*"/>
@@ -18,7 +19,7 @@
     </xsl:next-match>
   </xsl:template>
   
-  <xsl:template match="w:r[w:t]/w:rPr[*]" mode="modify">
+  <xsl:template match="w:r[w:t]/w:rPr[*]" mode="docx2hub:modify">
     <xsl:param name="run-signatures" as="xs:string*" tunnel="yes"/>
     <xsl:copy>
       <xsl:variable name="prop-signature" select="w:prop-signature(.)" as="xs:string"/>
@@ -33,7 +34,7 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="w:styles" mode="modify">
+  <xsl:template match="w:styles" mode="docx2hub:modify">
     <xsl:param name="run-signatures" as="xs:string*" tunnel="yes"/>
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
