@@ -30,7 +30,6 @@
   <p:import href="http://transpect.le-tex.de/xproc-util/store-debug/store-debug.xpl" />
   <p:import href="http://transpect.le-tex.de/calabash-extensions/ltx-lib.xpl" />
   
-  <p:variable name="result" select="replace($file, '\.docx$', 'mod.docx')"/>
   <p:variable name="basename" select="replace($file, '^(.+?)([^/\\]+)\.docx$', '$2')"/>
   
   <letex:unzip name="proto-unzip">
