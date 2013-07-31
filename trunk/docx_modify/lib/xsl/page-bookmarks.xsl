@@ -32,6 +32,9 @@
     <xsl:sequence select="$listchange"/>
   </xsl:template>
   
+  <xsl:template match="@xml:base" mode="bookmarkstart">
+    <xsl:apply-templates select="." mode="docx2hub:modify"/>
+  </xsl:template>
   
   <xsl:template match="w:body" mode="bookmarkstart">
     <w:body>

@@ -20,7 +20,7 @@
   
   <p:import href="http://transpect.le-tex.de/xproc-util/xslt-mode/xslt-mode.xpl"/>
   
-  <letex:xslt-mode mode="docx2hub:modify" prefix="docx_modify/modify">
+  <letex:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>

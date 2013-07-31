@@ -29,7 +29,9 @@
     other stylesheets or use multiple passes in different modes. In order to facilitate this common processing pattern,
     an XProc pipeline may also be supplied for the compound→compound transformation part. This pipeline will be dynamically
     executed by this pipeline. Please note that your stylesheet must use named modes if you are using an letex:xslt-mode 
-    pipeline.</p:documentation>
+    pipeline.
+    Please also note that if your pipeline/stylesheet don't have a pass in docxhub:modify mode, they need to match @xml:base
+    in any of the other modifying modes and apply-templates to it in mode docxhub:modify.</p:documentation>
   </p:input>
   <p:input port="xpl">
     <p:document href="single-pass_modify.xpl"/>
@@ -207,15 +209,7 @@
     </p:input>
   </cx:eval>
 
-  <letex:xslt-mode msg="yes" mode="docx2hub:modify">
-    <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
-    <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
-    <p:input port="models"><p:empty/></p:input>
-    <p:with-option name="prefix" select="concat('docx_modify/', $basename, '/3')"/>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-param name="srcpaths" select="'no'"/>
-  </letex:xslt-mode>
+  <p:unwrap match="/cx:document[@port eq 'result']"/>
   
   <letex:xslt-mode msg="yes" mode="docx2hub:export" name="export">
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
