@@ -42,6 +42,10 @@
   <p:input port="params" kind="parameter" primary="true">
     <p:documentation>Arbitrary parameters that will be passed to the dynamically executed pipeline.</p:documentation>
   </p:input>
+  <p:input port="external-sources" sequence="true">
+    <p:documentation>Arbitrary source XML. Example: Hub XML that is transformed to OOXML and then patched into the
+    expanded docx template.</p:documentation>
+  </p:input>
   <p:input port="options">
     <p:documentation>Options to the modifying XProc pipeline.</p:documentation>
   </p:input>
@@ -147,7 +151,18 @@
       <p:pipe step="compound-document" port="result"/>
     </p:input>
   </p:wrap>
-  <p:add-attribute name="source" attribute-name="port" attribute-value="source" match="/*"/>
+  <p:add-attribute name="docx-source" attribute-name="port" attribute-value="source" match="/*"/>
+  
+  <p:sink/>
+  
+  <p:for-each name="wrap-external-sources">
+    <p:iteration-source>
+      <p:pipe step="docx_modify" port="external-sources"/>
+    </p:iteration-source>
+    <p:output port="result" primary="true"/>
+    <p:wrap wrapper="cx:document" match="/"/>
+    <p:add-attribute attribute-name="port" attribute-value="source" match="/*"/>
+  </p:for-each>
   
   <p:sink/>
   
@@ -172,6 +187,7 @@
   <p:xslt name="options" template-name="main">
     <p:documentation>Options for the dynamically executed pipeline. You may supply additional
     options using a cx:options document with cx:option name/value entries.</p:documentation>
+    <p:with-param name="file" select="$file"/>
     <p:with-param name="debug" select="$debug"/>
     <p:with-param name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:input port="parameters"><p:empty/></p:input>
@@ -181,12 +197,14 @@
     <p:input port="stylesheet">
       <p:inline>
         <xsl:stylesheet version="2.0">
+          <xsl:param name="file" as="xs:string"/>
           <xsl:param name="debug" as="xs:string"/>
           <xsl:param name="debug-dir-uri" as="xs:string"/>
           <xsl:template name="main">
             <cx:options>
               <cx:option name="debug" value="{$debug}"/>
               <cx:option name="debug-dir-uri" value="{$debug-dir-uri}"/>
+              <cx:option name="file" value="{$file}"/>
               <xsl:sequence select="collection()/cx:options/cx:option"/>
             </cx:options>
           </xsl:template>
@@ -201,7 +219,8 @@
     </p:input>
     <p:input port="source">
       <p:pipe port="result" step="stylesheet"/>
-      <p:pipe port="result" step="source"/>
+      <p:pipe port="result" step="docx-source"/>
+      <p:pipe port="result" step="wrap-external-sources"/>
       <p:pipe port="result" step="parameters"/>
     </p:input>
     <p:input port="options">
