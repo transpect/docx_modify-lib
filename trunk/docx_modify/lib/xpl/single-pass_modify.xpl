@@ -22,6 +22,7 @@
   
   <letex:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
+    <p:input port="models"><p:empty/></p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
   </letex:xslt-mode>
