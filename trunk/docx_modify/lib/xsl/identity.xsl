@@ -26,8 +26,13 @@
     <xsl:attribute name="{name()}" select="replace(., '\.docx.tmp', $out-dir-replacement)"/>
   </xsl:template>
 
+  <xsl:template match="w:root" mode="docx2hub:export" priority="2">
+    <xsl:copy>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
 
-  <xsl:template match="w:root | *[rel:Relationships]" mode="docx2hub:export" priority="2">
+  <xsl:template match="*[rel:Relationships] | w:docTypes" mode="docx2hub:export" priority="2">
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
@@ -35,6 +40,9 @@
     <xsl:result-document href="{@xml:base}">
       <xsl:next-match/>
     </xsl:result-document>
+    <file xmlns="http://www.w3.org/ns/xproc-step" 
+      status="modified-or-new-and-written-to-sys"
+      name="{replace(@xml:base, '^((/word/)|.)+/((%5BContent_Types|word/).*)$', '$3')}" />
   </xsl:template>
   
   <xsl:template match="@xml:base" mode="docx2hub:export"/>

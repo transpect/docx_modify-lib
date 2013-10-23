@@ -239,7 +239,7 @@
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-param name="srcpaths" select="'no'"/>
   </letex:xslt-mode>
-  
+
   <p:sink/>
   
   <p:xslt name="zip-manifest">
@@ -257,6 +257,11 @@
           <xsl:template match="c:files">
             <c:zip-manifest>
               <xsl:apply-templates/>
+              <xsl:apply-templates 
+                select="collection()
+                          /*:root
+                            /c:file[@status eq 'modified-or-new-and-written-to-sys']
+                                   [not(@name = collection()/c:files/c:file/@name)]" />
             </c:zip-manifest>
           </xsl:template>
           <xsl:variable name="base-uri" select="replace(/*/@xml:base, '\.docx\.tmp', '.docx.out')" as="xs:string"/>
