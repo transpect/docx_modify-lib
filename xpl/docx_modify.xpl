@@ -55,7 +55,7 @@
   <p:import href="http://transpect.le-tex.de/xproc-util/store-debug/store-debug.xpl" />
   <p:import href="http://transpect.le-tex.de/calabash-extensions/ltx-lib.xpl" />
   
-  <p:variable name="basename" select="replace($file, '^(.+?)([^/\\]+)\.docx$', '$2')"/>
+  <p:variable name="basename" select="replace($file, '^(.+?)([^/\\]+)\.do[ct][mx]$', '$2')"/>
 
   <p:parameters name="consolidate-params">
     <p:input port="parameters">
@@ -98,7 +98,7 @@
     <p:variable name="base-dir" select="/c:files/@xml:base">
       <p:pipe port="result" step="unzip"/>
     </p:variable>
-    <p:variable name="new-dir" select="replace($base-dir, '\.docx\.tmp', '.docx.out')"/>
+    <p:variable name="new-dir" select="replace($base-dir, '(\.do[ct][mx])\.tmp', '$1.out')"/>
     <p:variable name="name" select="/*/@name">
       <p:pipe port="current" step="copy"/>
     </p:variable>
@@ -242,7 +242,7 @@
 
   <p:sink/>
   
-  <p:xslt name="zip-manifest">
+  <p:xslt name="zip-manifest" cx:depends-on="export">
     <p:input port="parameters"><p:empty/></p:input>
     <p:input port="source">
       <p:pipe port="result" step="unzip"/>
@@ -260,11 +260,11 @@
               <xsl:apply-templates 
                 select="collection()
                           /*:root
-                            /c:file[@status eq 'modified-or-new-and-written-to-sys']
-                                   [not(@name = collection()/c:files/c:file/@name)]" />
+                            //c:file[@status eq 'modified-or-new-and-written-to-sys']
+                                    [not(@name = collection()/c:files/c:file/@name)]" />
             </c:zip-manifest>
           </xsl:template>
-          <xsl:variable name="base-uri" select="replace(/*/@xml:base, '\.docx\.tmp', '.docx.out')" as="xs:string"/>
+          <xsl:variable name="base-uri" select="replace(/*/@xml:base, '(\.do[ct][mx])\.tmp', '$1.out')" as="xs:string"/>
           <xsl:template match="c:file">
             <c:entry name="{replace(replace(@name, '%5B', '['), '%5D', ']')}" href="{concat($base-uri, @name)}" compression-method="deflate" compression-level="default"/>
           </xsl:template>
@@ -282,7 +282,7 @@
   <p:sink/>
   
   <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip">
-    <p:with-option name="href" select="replace(/c:files/@xml:base, '\.docx\.tmp/?$', '.mod.docx')" >
+    <p:with-option name="href" select="replace(/c:files/@xml:base, '(\.do[ct][mx])\.tmp/?$', '.mod$1')" >
       <p:pipe port="result" step="unzip"/>
     </p:with-option>
     <p:input port="source"><p:empty/></p:input>
