@@ -22,7 +22,14 @@
   </p:option>
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
-  
+  <p:option name="docx-target-uri" select="''">
+    <p:documentation>
+      URI where the generated docx will be saved. Possibilities:
+      - leave it empty to save the docx near docx template file (only file suffix is changed to .mod.docx)
+      - absolute path to a file
+    </p:documentation>
+  </p:option>
+
   <p:input port="xslt">
     <p:documentation>XSLT that transforms the compound OOXML document (all files assembled below a single w:root element,
       as produced by the step named 'insert-xpath') to a target compound document. The stylesheet may of course import
@@ -229,7 +236,7 @@
   </cx:eval>
 
   <p:unwrap match="/cx:document[@port eq 'result']"/>
-  
+
   <letex:xslt-mode msg="yes" mode="docx2hub:export" name="export">
     <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
     <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
@@ -280,10 +287,51 @@
   </letex:store-debug>
   
   <p:sink/>
-  
-  <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip">
-    <p:with-option name="href" select="replace(/c:files/@xml:base, '(\.do[ct][mx])\.tmp/?$', '.mod$1')" >
+
+  <p:xslt name="zip-file-uri" template-name="main">
+    <p:with-param name="docx-target-uri" select="$docx-target-uri"/>
+    <p:with-param name="template-base-uri" select="/c:files/@xml:base" >
       <p:pipe port="result" step="unzip"/>
+    </p:with-param>
+    <p:input port="source">
+      <p:empty/>
+    </p:input>
+    <p:input port="stylesheet">
+      <p:inline>
+        <xsl:stylesheet version="2.0" 
+          xmlns:c="http://www.w3.org/ns/xproc-step" 
+          xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          xmlns:letex="http://www.le-tex.de/namespace">
+          <xsl:param name="docx-target-uri" required="yes" as="xs:string" />
+          <xsl:param name="template-base-uri" required="yes" as="xs:string" />
+          <xsl:template name="main">
+            <xsl:variable name="result" as="element(c:result)">
+              <c:result>
+                <xsl:choose>
+                  <!-- full path given -->
+                  <xsl:when test="matches($docx-target-uri, '^.+\.\w+$')">
+                    <xsl:value-of select="$docx-target-uri"/>
+                  </xsl:when>
+                  <!-- no path (empty string) given -->
+                  <xsl:otherwise>
+                    <xsl:value-of select="replace($template-base-uri, '(\.do[ct][mx])\.tmp/?$', '.mod$1')"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </c:result>
+            </xsl:variable>
+            <xsl:message select="concat('docx_modify: modified docx will be stored in ', $result)"/>
+            <xsl:sequence select="$result"/>
+          </xsl:template>
+        </xsl:stylesheet>
+      </p:inline>
+    </p:input>
+  </p:xslt>
+
+  <p:sink/>
+
+  <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip">
+    <p:with-option name="href" select="/c:result" >
+      <p:pipe port="result" step="zip-file-uri"/>
     </p:with-option>
     <p:input port="source"><p:empty/></p:input>
     <p:input port="manifest">
