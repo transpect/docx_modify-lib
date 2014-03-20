@@ -12,12 +12,6 @@
   <xsl:import href="http://transpect.le-tex.de/docx2hub/main.xsl"/>
   <xsl:import href="http://transpect.le-tex.de/docx_modify/xsl/identity.xsl"/>
   
-  <!--<xsl:function name="docx2hub:is-symbol-rfonts" as="xs:boolean">
-    
-    <xsl:sequence select=""></xsl:sequence>
-  </xsl:function>-->
-  
-  
   <xsl:template match="w:lvlText[../w:rPr/w:rFonts/@w:ascii=$docx2hub:symbol-font-names]/@w:val" mode="docx2hub:modify">
     <xsl:attribute name="{name()}">
       <xsl:apply-templates select="." mode="wml-to-dbk"/>
@@ -25,10 +19,11 @@
   </xsl:template>
   
   <xsl:variable name="arial-unicode-rfonts" as="element(w:rFonts)">
-    <w:rFonts w:ascii="Arial Unicode MS"
+    <w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math" w:cs="Cambria Math"/>
+    <!--<w:rFonts w:ascii="Arial Unicode MS"
       w:eastAsia="Arial Unicode MS"
       w:hAnsi="Arial Unicode MS"
-      w:hint="eastAsia"/>
+      w:hint="eastAsia"/>-->
   </xsl:variable>
   
   <xsl:template match="  w:rPr[../w:lvlText]/w:rFonts[@w:ascii=$docx2hub:symbol-font-names]" mode="docx2hub:modify">
