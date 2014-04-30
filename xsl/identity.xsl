@@ -45,4 +45,38 @@
   
   <xsl:template match="@xml:base" mode="docx2hub:export"/>
 
+  <!-- create docVars from processing instructions named 'docx_modify_docVar'.
+    Example <?docx_modify_docVar name value string?> → <w:docVar w:name="name" w:val="value string"/> 
+    Please note that w:settings has an @xml:base attribute. The template matching *[xml:base] has higher priority. -->
+  <xsl:template match="w:settings" mode="docx2hub:export">
+    <xsl:copy>
+      <xsl:apply-templates select="@*, * except w:docVars" mode="#current"/>
+      <xsl:variable name="new-docVars" as="element(w:docVar)*">
+        <xsl:apply-templates select="//processing-instruction()[name() = 'docx_modify_docVar']" mode="docx2hub:postprocess"/>
+      </xsl:variable>
+      <w:docVars>
+        <xsl:for-each-group select="w:docVars/w:docVar, $new-docVars" group-by="@w:name">
+          <xsl:copy>
+            <xsl:for-each select="current-group()[last()]">
+              <xsl:copy-of select="@w:name, @w:val"/>
+            </xsl:for-each>
+          </xsl:copy>
+        </xsl:for-each-group>
+      </w:docVars>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="processing-instruction()[name() = 'docx_modify_docVar']" mode="docx2hub:postprocess">
+    <xsl:analyze-string select="." regex="^\s*(\i\c*)\s+(.+)$">
+      <xsl:matching-substring>
+        <w:docVar w:name="{regex-group(1)}" w:val="{regex-group(2)}"/>    
+      </xsl:matching-substring>
+      <xsl:non-matching-substring>
+        <w:docVar w:name="invalid_docVarName" w:val="{.}"/>
+      </xsl:non-matching-substring>
+    </xsl:analyze-string>
+  </xsl:template>
+  
+  
+
 </xsl:stylesheet>
