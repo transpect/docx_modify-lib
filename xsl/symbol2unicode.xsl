@@ -23,14 +23,6 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:variable name="replacement-rfonts" as="element(w:rFonts)">
-    <w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math" w:cs="Cambria Math"/>
-    <!--<w:rFonts w:ascii="Arial Unicode MS"
-      w:eastAsia="Arial Unicode MS"
-      w:hAnsi="Arial Unicode MS"
-      w:hint="eastAsia"/>-->
-  </xsl:variable>
-  
   <xsl:template match="w:rPr[../w:lvlText]/w:rFonts[@w:ascii=$docx2hub:symbol-font-names]" mode="docx2hub:modify">
     <xsl:variable name="replacement-text" as="item()*">
       <xsl:apply-templates select="../../w:lvlText/@w:val" mode="wml-to-dbk">
@@ -42,7 +34,7 @@
         <xsl:sequence select="."/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:sequence select="$replacement-rfonts"/>
+        <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -61,7 +53,7 @@
         <xsl:sequence select="."/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:sequence select="$replacement-rfonts"/>
+        <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
