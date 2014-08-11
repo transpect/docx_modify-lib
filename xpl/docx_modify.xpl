@@ -22,29 +22,41 @@
   </p:option>
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
-  <p:option name="docx-target-uri" select="''">
-    <p:documentation>
-      URI where the generated docx will be saved. Possibilities:
-      - leave it empty to save the docx near docx template file (only file suffix is changed to .mod.docx)
-      - absolute path to a file
+  <p:option name="docx-target-uri" required="false" select="''">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>URI where the generated docx will be saved. Possibilities:</p>
+      <ul>
+        <li>leave it empty to save the docx near docx template file (only file suffix is changed to .mod.docx)</li>
+        <li>absolute path to a file</li>
+      </ul>
+    </p:documentation>
+  </p:option>
+  <p:option name="docx2hub-add-srcpath-attributes" required="false" select="'no'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Wether docx2hub adds srcpath attributes in mode insert-xpath to content elements or not. Example use: you have to 
+        replace already modified content of the docx (external conversion) and match old nodes via @srcpath value.</p>
+      <p>Default: no (saves time and memory)</p>
     </p:documentation>
   </p:option>
 
   <p:input port="xslt">
-    <p:documentation>XSLT that transforms the compound OOXML document (all files assembled below a single w:root element,
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>XSLT that transforms the compound OOXML document (all files assembled below a single w:root element,
       as produced by the step named 'insert-xpath') to a target compound document. The stylesheet may of course import
     other stylesheets or use multiple passes in different modes. In order to facilitate this common processing pattern,
     an XProc pipeline may also be supplied for the compound→compound transformation part. This pipeline will be dynamically
     executed by this pipeline. Please note that your stylesheet must use named modes if you are using an letex:xslt-mode 
-    pipeline.
-    Please also note that if your pipeline/stylesheet don't have a pass in docxhub:modify mode, they need to match @xml:base
-    in any of the other modifying modes and apply-templates to it in mode docxhub:modify.</p:documentation>
+    pipeline.</p>
+    <p>Please also note that if your pipeline/stylesheet don't have a pass in docxhub:modify mode, they need 
+      to match @xml:base in any of the other modifying modes and apply-templates to it in mode docxhub:modify.</p>
+    </p:documentation>
   </p:input>
   <p:input port="xpl">
     <p:document href="single-pass_modify.xpl"/>
     <p:documentation>See the 'xslt' port’s documentation. You may supply another pipeline that will be executed instead of 
-      the default single-pass modify pipeline. You pipeline typically consists of chained transformations in different modes, as invoked by 
-    letex:xslt-mode. Of course you can supply other pipelines with the same signature (single w:root input/output documents).</p:documentation>
+      the default single-pass modify pipeline. You pipeline typically consists of chained transformations in different modes, 
+      as invoked by letex:xslt-mode. Of course you can supply other pipelines with the same signature (single 
+      w:root input/output documents).</p:documentation>
   </p:input>
   <p:input port="params" kind="parameter" primary="true">
     <p:documentation>Arbitrary parameters that will be passed to the dynamically executed pipeline.</p:documentation>
@@ -150,7 +162,7 @@
     <p:with-option name="prefix" select="concat('docx2hub/', $basename, '/01')"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-param name="srcpaths" select="'no'"/>
+    <p:with-param name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
   </letex:xslt-mode>
   
   <p:wrap wrapper="cx:document" match="/">
