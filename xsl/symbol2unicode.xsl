@@ -39,12 +39,7 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="w:t[
-                        string-length(.) = 1 and 
-                        not(../w:lvlText) and 
-                        ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
-                        key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
-                      ]" mode="docx2hub:modify">
+  <xsl:template match="w:t[docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
     <xsl:variable name="resolved-unicode-char" as="attribute(char)?"
       select="key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char"/>
     <xsl:choose>
@@ -59,16 +54,30 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="w:t[
+                        not(docx2hub:text-is-rFonts-only-symbol(.))
+                        and ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
+                      ]" mode="docx2hub:modify">
+    <xsl:message select="'Help/Handle me: unmapped text with changed rFonts setting.'"/>
+  </xsl:template>
+
   <xsl:template match="w:rPr[
-                        w:t[
-                          string-length(.) = 1 and 
-                          not(../w:lvlText) and 
-                          ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
-                          key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
-                        ]
-                      ]" mode="docx2hub:modify"><xsl:message select ="."/>
+                        ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
+                      ]/w:rFonts" mode="docx2hub:modify">
     <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
   </xsl:template>
+  
+  <xsl:function name="docx2hub:text-is-rFonts-only-symbol" as="xs:boolean">
+    <xsl:param name="w-t" as="element(w:t)"/>
+    <xsl:sequence select="boolean(
+                            $w-t[
+                              string-length(.) = 1 and 
+                              not(../w:lvlText) and 
+                              ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
+                              key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
+                            ]
+                          )"/>
+  </xsl:function>
   
   <!-- what if there is no w:rFonts element? Then we’d have to match the rPr and insert the w:rFonts at
     the XSD-compliant position. We’d need the sorting routines of hub2docx then. -->
