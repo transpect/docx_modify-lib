@@ -6,7 +6,7 @@
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
   xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
   xmlns:css="http://www.w3.org/1996/css"
-  exclude-result-prefixes="xs docx2hub"
+  exclude-result-prefixes="xs docx2hub css"
   version="2.0">
   
   <xsl:import href="http://transpect.le-tex.de/docx2hub/main.xsl"/>
@@ -37,6 +37,37 @@
         <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="w:t[
+                        string-length(.) = 1 and 
+                        not(../w:lvlText) and 
+                        ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
+                        key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
+                      ]" mode="docx2hub:modify">
+    <xsl:variable name="resolved-unicode-char" as="attribute(char)?"
+      select="key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char"/>
+    <xsl:choose>
+      <xsl:when test="$resolved-unicode-char">
+        <w:t>
+          <xsl:value-of select="$resolved-unicode-char"/>
+        </w:t>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="."/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="w:rPr[
+                        w:t[
+                          string-length(.) = 1 and 
+                          not(../w:lvlText) and 
+                          ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
+                          key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
+                        ]
+                      ]" mode="docx2hub:modify"><xsl:message select ="."/>
+    <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
   </xsl:template>
   
   <!-- what if there is no w:rFonts element? Then we’d have to match the rPr and insert the w:rFonts at
