@@ -35,7 +35,8 @@
                           ]/@Id" />
   </xsl:function> 
 
-  <xsl:template match="w:docRels/rel:Relationships/rel:Relationship" mode="docx2hub:modify">
+  <xsl:template match="w:docRels/rel:Relationships/rel:Relationship" 
+    mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:copy>
       <xsl:choose>
@@ -50,7 +51,8 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="w:containerRels/rel:Relationships/rel:Relationship" mode="docx2hub:modify">
+  <xsl:template match="w:containerRels/rel:Relationships/rel:Relationship" 
+    mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="containerrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:copy>
       <xsl:choose>
@@ -65,12 +67,13 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="a:blip/@r:embed | @r:id" mode="docx2hub:modify">
+  <xsl:template match="a:blip/@r:embed | @r:id" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="concat('rId', index-of($docrel-ids, .))"/>
   </xsl:template>
 
-  <xsl:template match="ct:Types/ct:Default[@ContentType = ('application/vnd.ms-office.vbaProject')]" mode="docx2hub:modify"/>
+  <xsl:template match="ct:Types/ct:Default[@ContentType = ('application/vnd.ms-office.vbaProject')]" 
+    mode="docx2hub:modify docx2hub:remove-customizations-and-macros"/>
   
   <xsl:template match="ct:Types/ct:Override/@ContentType[. = ('application/vnd.ms-word.stylesWithEffects+xml',
                                                               'application/vnd.ms-word.vbaData+xml',
@@ -83,11 +86,12 @@
   </xsl:template>
   
   <xsl:template match="ct:Types/ct:Override/@ContentType[. = 'application/vnd.ms-word.document.macroEnabled.main+xml']"
-                mode="docx2hub:modify">
+                mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:attribute name="{name()}" select="'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'"/>
   </xsl:template>
 
-  <xsl:template match="w:containerProps/ep:Properties/ep:Template" mode="docx2hub:modify">
+  <xsl:template match="w:containerProps/ep:Properties/ep:Template" 
+    mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:copy>
       <xsl:value-of select="replace(., '\.dotm$', '.dotx')"/>  
     </xsl:copy>
