@@ -12,7 +12,7 @@
   exclude-result-prefixes="xs docx2hub"
   version="2.0">
 
-  <xsl:function name="docx2hub:docrel-ids" as="xs:string">
+  <xsl:function name="docx2hub:docrel-ids" as="xs:string*">
     <xsl:param name="doc" as="document-node(element(w:root))"/>
     <!-- Not just paragraphs, but any element below w:body. 
       Typically, you submit $doc/w:root/w:document/w:body/*, but you can restrict it 
@@ -28,7 +28,7 @@
                           distinct-values($specific-paragraphs/descendant::a:blip/@r:embed)" />
   </xsl:function> 
 
-  <xsl:function name="docx2hub:containerrel-ids" as="xs:string">
+  <xsl:function name="docx2hub:containerrel-ids" as="xs:string*">
     <xsl:param name="doc" as="document-node(element(w:root))"/>
     <xsl:sequence select="$doc/w:root/w:containerRels/rel:Relationships/rel:Relationship[
                             not(@Type = ('http://schemas.microsoft.com/office/2006/relationships/ui/extensibility'))
