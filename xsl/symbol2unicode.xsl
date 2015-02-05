@@ -29,9 +29,14 @@
         <xsl:with-param name="leave-unmappable-symbols-unchanged" select="true()" tunnel="yes"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <xsl:variable name="replacement-string-value" as="xs:string?" select="string-join($replacement-text/(self::text() | self::attribute()), '')"/>
+    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)*" select="docx2hub:font-map(@w:ascii)/symbols/symbol[@char = $replacement-string-value][1]"/>
     <xsl:choose>
-      <xsl:when test="string-join($replacement-text/(self::text() | self::attribute()), '') = ../../w:lvlText/@w:val">
+      <xsl:when test="$replacement-string-value = ../../w:lvlText/@w:val">
         <xsl:sequence select="."/>
+      </xsl:when>
+      <xsl:when test="$replacement-symbol-map-entry/@font">
+        <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
@@ -40,8 +45,8 @@
   </xsl:template>
 
   <xsl:template match="w:t[docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
-    <xsl:variable name="resolved-unicode-char" as="attribute(char)?"
-      select="key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char"/>
+    <xsl:variable name="map" select="docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii)" as="document-node(element(symbols))?"/>
+    <xsl:variable name="resolved-unicode-char" as="attribute(char)?" select="(key('symbol-by-entity', ., $map)/@char)[1]"/>
     <xsl:choose>
       <xsl:when test="$resolved-unicode-char">
         <w:t>
@@ -64,7 +69,16 @@
   <xsl:template match="w:rPr[
                         ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
                       ]/w:rFonts" mode="docx2hub:modify">
-    <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
+    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
+      select="key('symbol-by-entity', ., docx2hub:font-map(@w:ascii))"/>
+    <xsl:choose>
+      <xsl:when test="$replacement-symbol-map-entry/@font">
+        <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>    
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:function name="docx2hub:text-is-rFonts-only-symbol" as="xs:boolean">
@@ -88,9 +102,14 @@
         <xsl:with-param name="leave-unmappable-symbols-unchanged" select="true()" tunnel="yes"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <xsl:variable name="replacement-string-value" as="xs:string?" select="string-join($replacement/(self::text() | self::attribute()), '')"/>
+    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?" select="docx2hub:font-map(@w:ascii)/symbols/symbol[@char = $replacement-string-value]"/>
     <xsl:choose>
       <xsl:when test="$replacement/@w:char = ../../w:sym/@w:char">
         <xsl:sequence select="."/>
+      </xsl:when>
+      <xsl:when test="$replacement-symbol-map-entry/@font">
+        <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
