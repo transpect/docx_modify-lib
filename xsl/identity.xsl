@@ -40,7 +40,9 @@
     </xsl:result-document>
     <file xmlns="http://www.w3.org/ns/xproc-step" 
       status="modified-or-new-and-written-to-sys"
-      name="{replace(@xml:base, '^((/word/)|.)+?/((%5BContent_Types|word|_rels|docProps).*)$', '$3')}" />
+      name="{if(contains(@xml:base, 'word/_rels/')) 
+             then replace(@xml:base, '^.+/(word/_rels/.+)$', '$1') 
+             else replace(@xml:base, '^((/word/)|.)+?/((%5BContent_Types|word|_rels|docProps).*)$', '$3')}" />
   </xsl:template>
   
   <xsl:template match="@xml:base" mode="docx2hub:export"/>
