@@ -12,6 +12,13 @@
   exclude-result-prefixes="xs docx2hub"
   version="2.0">
 
+  <xsl:template match="@* | *" mode="docx2hub:modify">
+    <xsl:copy>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+
+
   <xsl:function name="docx2hub:docrel-ids" as="xs:string*">
     <xsl:param name="doc" as="document-node(element(w:root))"/>
     <!-- Not just paragraphs, but any element below w:body. 
