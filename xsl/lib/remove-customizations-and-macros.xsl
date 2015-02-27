@@ -7,6 +7,7 @@
   xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
+  xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
   xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
   exclude-result-prefixes="xs docx2hub"
@@ -32,7 +33,7 @@
                                          'http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects',
                                          'http://schemas.microsoft.com/office/2006/relationships/ui/extensibility'))
                           ]/@Id,
-                          distinct-values($specific-paragraphs/descendant::a:blip/@r:embed)" />
+                          distinct-values($specific-paragraphs/(descendant::a:blip/@r:embed | descendant::v:imagedata/@r:id))" />
   </xsl:function> 
 
   <xsl:function name="docx2hub:containerrel-ids" as="xs:string*">
@@ -74,7 +75,7 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="a:blip/@r:embed | @r:id" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
+  <xsl:template match="a:blip/@r:embed | @r:id[ancestor::w:body]" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="concat('rId', index-of($docrel-ids, .))"/>
   </xsl:template>
