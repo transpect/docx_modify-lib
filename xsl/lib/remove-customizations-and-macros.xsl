@@ -27,6 +27,8 @@
       if you only want the docrels only for a specific section of the whole docx file: -->
     <xsl:param name="specific-paragraphs" as="element(*)*"/>
     <xsl:sequence select="$doc/w:root/w:docRels/rel:Relationships/rel:Relationship[
+                            (: These types will either be discarded (vbaProject, …) or collected in the 
+                               distinct-values() expression below (images) :)
                             not(@Type = ('http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
                                          'http://schemas.microsoft.com/office/2006/relationships/vbaProject',
                                          'http://schemas.microsoft.com/office/2006/relationships/keyMapCustomizations',
