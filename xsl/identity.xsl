@@ -21,7 +21,7 @@
   </xsl:template>
   
   <xsl:template match="@xml:base" mode="docx2hub:modify">
-    <xsl:attribute name="{name()}" select="replace(., '\.docx.tmp', $out-dir-replacement)"/>
+    <xsl:attribute name="{name()}" select="replace(., '\.doc[xm].tmp', $out-dir-replacement)"/>
   </xsl:template>
 
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
