@@ -12,7 +12,7 @@
   
   <xsl:param name="debug" select="'no'"/>
   
-  <xsl:param name="out-dir-replacement" select="'.docx.out'"/>
+  <xsl:param name="out-dir-replacement" select="'.docx.out/'"/>
   
   <xsl:template match="* | @*" mode="docx2hub:identity docx2hub:modify docx2hub:export">
     <xsl:copy>
@@ -21,7 +21,10 @@
   </xsl:template>
   
   <xsl:template match="@xml:base" mode="docx2hub:modify">
-    <xsl:attribute name="{name()}" select="replace(., '\.doc[xm].tmp', $out-dir-replacement)"/>
+    <xsl:attribute name="{name()}" 
+      select="if($out-dir-replacement eq '.docx.out') 
+              then replace(., '\.doc([xm]).tmp/', '.doc$1.out/')
+              else replace(., '\.doc[xm].tmp/', $out-dir-replacement)"/>
   </xsl:template>
 
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
