@@ -300,7 +300,7 @@
   
   <p:sink/>
 
-  <p:xslt name="zip-file-uri" template-name="main">
+  <p:xslt name="zip-file-uri" template-name="main" cx:depends-on="zip-manifest">
     <p:with-param name="docx-target-uri" select="$docx-target-uri"/>
     <p:with-param name="template-base-uri" select="/c:files/@xml:base" >
       <p:pipe port="result" step="unzip"/>
@@ -341,7 +341,7 @@
 
   <p:sink/>
 
-  <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip">
+  <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip" cx:depends-on="zip-file-uri">
     <p:with-option name="href" select="/c:result" >
       <p:pipe port="result" step="zip-file-uri"/>
     </p:with-option>
