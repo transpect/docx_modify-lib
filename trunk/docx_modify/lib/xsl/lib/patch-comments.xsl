@@ -27,14 +27,6 @@
     </xsl:next-match>
   </xsl:template>
 
-  <xsl:template match="w:comments" mode="docx2hub:modify">
-    <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
-    <xsl:if test="not($new-content/self::w:comments)">
-      <xsl:next-match/>
-    </xsl:if>
-  </xsl:template>
-
-  <xsl:template match="w:docRels/r:Relationships"></xsl:template>
-
+  <xsl:template match="w:comments" mode="docx2hub:modify"/>
 
 </xsl:stylesheet>
