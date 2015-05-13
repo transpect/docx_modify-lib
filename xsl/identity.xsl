@@ -28,8 +28,10 @@
   </xsl:template>
 
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
+    <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
     <xsl:copy>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
+      <xsl:sequence select="$new-content"/>
     </xsl:copy>
   </xsl:template>
 
