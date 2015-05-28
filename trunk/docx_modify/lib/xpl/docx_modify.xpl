@@ -20,6 +20,11 @@
   <p:option name="file" required="true">
     <p:documentation>As required by docx2hub</p:documentation>
   </p:option>
+  <p:option name="apply-changemarkup" required="false" select="'no'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Apply all change markup on the compound word document.</p>
+    </p:documentation>
+  </p:option>
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="resolve-uri('debug')"/>
   <p:option name="docx-target-uri" required="false" select="''">
@@ -165,9 +170,33 @@
     <p:with-param name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
   </letex:xslt-mode>
   
+  
+  <p:choose name="apply-changemarkup-optionally">
+    <p:when test="$apply-changemarkup eq 'yes'">
+      <p:output port="result" primary="true"><p:pipe step="apply-changemarkup" port="result"/></p:output>
+      <letex:xslt-mode msg="yes" mode="docx2hub:apply-changemarkup" name="apply-changemarkup">
+        <p:pipeinfo>Mode docx2hub:apply-changemarkup introduced in revision 524 of docx2hub/lib.</p:pipeinfo>
+        <p:input port="parameters"><p:pipe step="params" port="result" /></p:input>
+        <p:input port="stylesheet"><p:document href="http://transpect.le-tex.de/docx2hub/main.xsl"/></p:input>
+        <p:input port="models"><p:empty/></p:input>
+        <p:with-option name="prefix" select="concat('docx2hub/', $basename, '/02')"/>
+        <p:with-option name="debug" select="$debug"/>
+        <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+      </letex:xslt-mode>
+    </p:when>
+    <p:otherwise>
+      <p:output port="result" primary="true"><p:pipe step="id-comp" port="result"/></p:output>
+      <p:identity name="id-comp">
+        <p:input port="source">
+          <p:pipe port="result" step="compound-document"/>
+        </p:input>
+      </p:identity>
+    </p:otherwise>
+  </p:choose>
+  
   <p:wrap wrapper="cx:document" match="/">
     <p:input port="source">
-      <p:pipe step="compound-document" port="result"/>
+      <p:pipe step="apply-changemarkup-optionally" port="result"/>
     </p:input>
   </p:wrap>
   <p:add-attribute name="docx-source" attribute-name="port" attribute-value="source" match="/*"/>
