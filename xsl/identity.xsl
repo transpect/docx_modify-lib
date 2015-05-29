@@ -13,6 +13,7 @@
   <xsl:param name="debug" select="'no'"/>
   
   <xsl:param name="out-dir-replacement" select="'.docx.out/'"/>
+  <xsl:param name="media-path" select="'none'"/>
   
   <xsl:template match="* | @*" mode="docx2hub:identity docx2hub:modify docx2hub:export">
     <xsl:copy>
@@ -84,6 +85,13 @@
     </xsl:analyze-string>
   </xsl:template>
   
+  <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Target[matches(.,'^media')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
+    <xsl:for-each select="descendant-or-self::rel:Relationship/@Target[matches(.,'^media')]">
+      <file xmlns="http://www.w3.org/ns/xproc-step" 
+        status="external-media-file"
+        name="{concat('word/',.)}" />  
+    </xsl:for-each>
+    <xsl:next-match/>
+  </xsl:template>
   
-
 </xsl:stylesheet>
