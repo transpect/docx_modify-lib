@@ -38,9 +38,14 @@
   </p:option>
   <p:option name="docx2hub-add-srcpath-attributes" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-      <p>Wether docx2hub adds srcpath attributes in mode insert-xpath to content elements or not. Example use: you have to 
+      <p>Whether docx2hub adds srcpath attributes in mode insert-xpath to content elements or not. Example use: you have to 
         replace already modified content of the docx (external conversion) and match old nodes via @srcpath value.</p>
       <p>Default: no (saves time and memory)</p>
+    </p:documentation>
+  </p:option>
+  <p:option name="media-path" required="false" select="'none'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>If there are external media files that have to be included in the final docx-file, media-path determines the path where to find the files. Otherwise it should be 'none'.</p>
     </p:documentation>
   </p:option>
 
@@ -285,13 +290,14 @@
     <p:with-option name="prefix" select="concat('docx_modify/', $basename, '/9')"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-param name="media-path" select="$media-path"/>
     <p:with-param name="srcpaths" select="'no'"/>
   </letex:xslt-mode>
 
   <p:sink/>
   
   <p:xslt name="zip-manifest" cx:depends-on="export">
-    <p:input port="parameters"><p:empty/></p:input>
+    <p:with-param name="media-path" select="$media-path"/>
     <p:input port="source">
       <p:pipe port="result" step="unzip"/>
       <p:pipe port="result" step="export">
@@ -302,6 +308,7 @@
     <p:input port="stylesheet">
       <p:inline>
         <xsl:stylesheet version="2.0">
+          <xsl:param name="media-path"/>
           <xsl:template match="c:files">
             <c:zip-manifest>
               <xsl:apply-templates/>
@@ -310,11 +317,16 @@
                           /*:root
                             //c:file[@status eq 'modified-or-new-and-written-to-sys']
                                     [not(@name = collection()/c:files/c:file/@name)]" />
+              <xsl:apply-templates 
+                select="collection()
+                /*:root
+                //c:file[not($media-path='none')][@status eq 'external-media-file']
+                [not(@name = collection()/c:files/c:file/@name)]" />
             </c:zip-manifest>
           </xsl:template>
           <xsl:variable name="base-uri" select="replace(/*/@xml:base, '(\.do[ct][mx])\.tmp', '$1.out')" as="xs:string"/>
           <xsl:template match="c:file">
-            <c:entry name="{replace(replace(@name, '%5B', '['), '%5D', ']')}" href="{concat($base-uri, @name)}" compression-method="deflate" compression-level="default"/>
+            <c:entry name="{replace(replace(@name, '%5B', '['), '%5D', ']')}" href="{if (@status eq 'external-media-file') then concat('file:', $media-path, '/', replace(@name, '^word/media/', '')) else concat($base-uri, @name)}" compression-method="deflate" compression-level="default"/>
           </xsl:template>
         </xsl:stylesheet>
       </p:inline>
