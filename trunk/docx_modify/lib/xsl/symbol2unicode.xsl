@@ -104,7 +104,10 @@
     </xsl:variable>
     <xsl:variable name="replacement-string-value" as="xs:string?" select="string-join($replacement/(self::text() | self::attribute()), '')"/>
     <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?" 
-      select="if(@w:ascii) then docx2hub:font-map(@w:ascii)/symbols/symbol[@char = $replacement-string-value][1] else ()"/>
+      select="if(@w:ascii) then docx2hub:font-map(@w:ascii)/symbols
+                /symbol[@char = $replacement-string-value]
+                       [if(current()/../../w:sym) then current()/../../w:sym/@w:char = @number else true()] 
+              else ()"/><xsl:message select="if(@w:ascii) then docx2hub:font-map(@w:ascii)/symbols/symbol[@char = $replacement-string-value][if(current()/../../w:sym) then current()/../../w:sym/@w:char = @number else true()] else ()"/>
     <xsl:choose>
       <xsl:when test="$replacement/@w:char = ../../w:sym/@w:char">
         <xsl:sequence select="."/>
