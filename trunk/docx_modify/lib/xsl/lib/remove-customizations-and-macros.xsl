@@ -35,7 +35,7 @@
                                          'http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects',
                                          'http://schemas.microsoft.com/office/2006/relationships/ui/extensibility'))
                           ]/@Id,
-                          distinct-values($specific-paragraphs/(descendant::a:blip/@r:embed | descendant::v:imagedata/@r:id))" />
+                          distinct-values($specific-paragraphs/(descendant::a:blip/(@r:embed | @r:link), descendant::v:imagedata/@r:id))" />
   </xsl:function> 
 
   <xsl:function name="docx2hub:containerrel-ids" as="xs:string*">
@@ -77,7 +77,7 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="a:blip/@r:embed | @r:id[ancestor::w:body]" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
+  <xsl:template match="a:blip/@r:embed | a:blip/@r:link | @r:id[ancestor::w:body]" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="concat('rId', index-of($docrel-ids, .))"/>
   </xsl:template>
