@@ -45,6 +45,9 @@
                           ]/@Id" />
   </xsl:function> 
 
+  <!-- remove ignorable attribute -->
+  <xsl:template match="@mc:Ignorable" mode="docx2hub:modify docx2hub:remove-customizations-and-macros"/>
+
   <xsl:template match="w:docRels/rel:Relationships/rel:Relationship" 
     mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
