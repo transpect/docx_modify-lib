@@ -4,13 +4,13 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  xmlns:docx2hub = "http://transpect.io/docx2hub"
   xmlns:css="http://www.w3.org/1996/css"
   exclude-result-prefixes="xs docx2hub css"
   version="2.0">
   
-  <xsl:import href="http://transpect.le-tex.de/docx2hub/main.xsl"/>
-  <xsl:import href="http://transpect.le-tex.de/docx_modify/xsl/identity.xsl"/>
+  <xsl:import href="http://transpect.io/docx2hub/xsl/main.xsl"/>
+  <xsl:import href="http://transpect.io/docx_modify/xsl/identity.xsl"/>
   
   <xsl:template match="w:lvlText[../w:rPr/w:rFonts/@w:ascii=$docx2hub:symbol-font-names]" mode="docx2hub:modify">
     <xsl:variable name="replacement" as="item()*">

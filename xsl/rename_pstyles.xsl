@@ -3,9 +3,8 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:letex="http://www.le-tex.de/namespace"
-  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
-  exclude-result-prefixes="xs letex docx2hub"
+  xmlns:docx2hub = "http://transpect.io/docx2hub"
+  exclude-result-prefixes="xs docx2hub"
   version="2.0">
   
   <xsl:import href="identity.xsl"/>

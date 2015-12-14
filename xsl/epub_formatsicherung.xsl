@@ -3,13 +3,14 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:letex="http://www.le-tex.de/namespace"
-  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
-  exclude-result-prefixes="xs letex docx2hub"
+  xmlns:tr="http://transpect.io"
+  xmlns:docx2hub = "http://transpect.io/docx2hub"
+  exclude-result-prefixes="xs tr docx2hub"
   version="2.0">
   
   <xsl:import href="identity.xsl"/>
   <xsl:import href="props.xsl"/>
+  <xsl:import href="http://transpect.io/xslt-util/colors/xsl/colors.xsl"/>
 
   <xsl:template match="w:root" mode="docx2hub:modify">
     <xsl:variable name="font-replacements" as="element(font-replacements)">
@@ -32,7 +33,7 @@
       <xsl:variable name="prelim" as="attribute(*)*">
         <xsl:attribute name="font" select="replace($tokenized[4], '\s+', '')"/>
         <xsl:attribute name="color" select="replace(
-                                              letex:int-rgb-colors-to-hex(
+                                              tr:int-rgb-colors-to-hex(
                                                 for $i in tokenize($tokenized[5], ':')
                                                 return number($i)
                                               ),

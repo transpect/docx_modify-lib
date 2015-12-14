@@ -4,7 +4,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:docx2hub = "http://www.le-tex.de/namespace/docx2hub"
+  xmlns:docx2hub = "http://transpect.io/docx2hub"
   exclude-result-prefixes="xs docx2hub"
   version="2.0">
   
