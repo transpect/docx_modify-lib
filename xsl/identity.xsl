@@ -3,6 +3,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:c="http://www.w3.org/ns/xproc-step"
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -31,8 +32,11 @@
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
     <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
     <xsl:copy>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
-      <xsl:sequence select="$new-content"/>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <c:files>
+        <xsl:apply-templates select="node()" mode="#current"/>
+        <xsl:sequence select="$new-content"/>
+      </c:files>
     </xsl:copy>
   </xsl:template>
 
@@ -44,7 +48,7 @@
     <xsl:result-document href="{@xml:base}">
       <xsl:next-match/>
     </xsl:result-document>
-    <file xmlns="http://www.w3.org/ns/xproc-step" 
+    <c:file xmlns="http://www.w3.org/ns/xproc-step" 
       status="modified-or-new-and-written-to-sys"
       name="{if(contains(@xml:base, 'word/_rels/')) 
              then replace(@xml:base, '^.+/(word/_rels/.+)$', '$1') 
@@ -85,11 +89,11 @@
     </xsl:analyze-string>
   </xsl:template>
   
-  <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Target[matches(.,'^media')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
-    <xsl:for-each select="descendant-or-self::rel:Relationship/@Target[matches(.,'^media')]">
-      <file xmlns="http://www.w3.org/ns/xproc-step" 
+  <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
+    <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]/@Target">
+      <c:file xmlns="http://www.w3.org/ns/xproc-step" 
         status="external-media-file"
-        name="{concat('word/',.)}" />  
+        name="{if (matches(., '^media')) then concat('word/', .) else concat('word/media/', .)}" />  
     </xsl:for-each>
     <xsl:next-match/>
   </xsl:template>

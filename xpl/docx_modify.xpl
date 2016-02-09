@@ -310,18 +310,19 @@
               <xsl:apply-templates 
                 select="collection()
                           /*:root
-                            //c:file[@status eq 'modified-or-new-and-written-to-sys']
-                                    [not(@name = collection()/c:files/c:file/@name)]" />
+                            //*:file[@status eq 'modified-or-new-and-written-to-sys']
+                                    [not(@name = collection()/*:files/*:file/@name)]" />
               <xsl:apply-templates 
                 select="collection()
                 /*:root
-                //c:file[not($media-path='none')][@status eq 'external-media-file']
-                [not(@name = collection()/c:files/c:file/@name)]" />
+                //*:file[not($media-path='none')][@status eq 'external-media-file']
+                [not(@name = collection()/*:files/*:file/@name)]" />
             </c:zip-manifest>
           </xsl:template>
           <xsl:variable name="base-uri" select="replace(/*/@xml:base, '(\.do[ct][mx])\.tmp', '$1.out')" as="xs:string"/>
-          <xsl:template match="c:file">
-            <c:entry name="{replace(replace(@name, '%5B', '['), '%5D', ']')}" href="{if (@status eq 'external-media-file') then concat('file:', $media-path, '/', replace(@name, '^word/media/', '')) else concat($base-uri, @name)}" compression-method="deflate" compression-level="default"/>
+          <xsl:template match="*:file">
+            <xsl:variable name="path-prefix" as="xs:string?" select="concat('file:/', replace($media-path, '^file:/+', ''))"/>
+            <c:entry name="{replace(replace(@name, '%5B', '['), '%5D', ']')}" href="{if ((@status eq 'external-media-file')) then concat($path-prefix, replace(@name, '^word/media/', '')) else concat($base-uri, @name)}" compression-method="deflate" compression-level="default"/>
           </xsl:template>
         </xsl:stylesheet>
       </p:inline>
