@@ -52,8 +52,10 @@
     an XProc pipeline may also be supplied for the compound→compound transformation part. This pipeline will be dynamically
     executed by this pipeline. Please note that your stylesheet must use named modes if you are using an tr:xslt-mode 
     pipeline.</p>
-    <p>Please also note that if your pipeline/stylesheet don't have a pass in docxhub:modify mode, they need 
-      to match @xml:base in any of the other modifying modes and apply-templates to it in mode docxhub:modify.</p>
+      <p>Please also note that if your pipeline/stylesheet don't have a pass in docxhub:modify mode, they need 
+    to match @xml:base in any of the other modifying modes and apply-templates to it in mode docxhub:modify.</p>
+      <p>Please note that your stylesheet may need to import the identity.xsl or to transform the xml-base attributes itself 
+    (old base→new base).</p>
     </p:documentation>
   </p:input>
   <p:input port="xpl">
