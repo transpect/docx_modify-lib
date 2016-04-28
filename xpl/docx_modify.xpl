@@ -40,11 +40,13 @@
   </p:option>
   <p:option name="media-path" required="false" select="'none'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-      <p>If there are external media files that have to be included in the final docx-file, media-path determines the path where to find the files. Otherwise it should be 'none'.</p>
+      <p>If there are external media files that have to be included in the final docx file, media-path determines the path 
+        where to find the files. Otherwise it should be 'none'.</p>
     </p:documentation>
   </p:option>
 
   <p:input port="xslt">
+    <p:document href="../xsl/identity.xsl"/>
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>XSLT that transforms the compound OOXML document (all files assembled below a single w:root element,
       as produced by the step named 'insert-xpath') to a target compound document. The stylesheet may of course import

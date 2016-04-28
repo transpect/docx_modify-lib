@@ -7,7 +7,7 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:docx2hub = "http://transpect.io/docx2hub"
+  xmlns:docx2hub="http://transpect.io/docx2hub"
   exclude-result-prefixes="xs rel docx2hub"
   version="2.0">
   
