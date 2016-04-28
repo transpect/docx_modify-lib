@@ -10,9 +10,13 @@
   <xsl:import href="identity.xsl"/>
   
   <xsl:template match="w_strict:*" mode="docx2hub:modify">
-    <xsl:element name="{name()}" xmlns="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    <xsl:element name="{name()}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="@w_strict:*" mode="docx2hub:modify">
+    <xsl:attribute name="{name()}" select="."/>
   </xsl:template>
   
 </xsl:stylesheet>
