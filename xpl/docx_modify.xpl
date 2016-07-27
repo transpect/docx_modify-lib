@@ -77,6 +77,10 @@
   <p:input port="options">
     <p:documentation>Options to the modifying XProc pipeline.</p:documentation>
   </p:input>
+  
+  <p:output port="result" primary="true">
+    <p:documentation>A c:result element with an export-uri attribute of the modified docx file.</p:documentation>
+  </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl" />
@@ -400,12 +404,12 @@
     <p:choose>
       <p:when test="not($debug = 'yes')">
         <cxf:delete recursive="true" fail-on-error="false">
-          <p:with-option name="href" select="/c:files/@xml:base" >
+          <p:with-option name="href" select="/c:files/@xml:base">
             <p:pipe step="proto-unzip" port="result"/>
           </p:with-option>
         </cxf:delete>
         <cxf:delete recursive="true" fail-on-error="false">
-          <p:with-option name="href" select="replace(/c:files/@xml:base, '\.tmp/?$', '.out')" >
+          <p:with-option name="href" select="replace(/c:files/@xml:base, '\.tmp/?$', '.out')">
             <p:pipe step="proto-unzip" port="result"/>
           </p:with-option>
         </cxf:delete>
@@ -418,6 +422,12 @@
         </p:sink>
       </p:otherwise>
     </p:choose>
+
+    <p:identity name="fwd-zip">
+      <p:input port="source">
+        <p:pipe port="result" step="zip"/>
+      </p:input>
+    </p:identity>
 
   </p:group>
 

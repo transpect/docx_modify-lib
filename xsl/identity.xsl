@@ -25,8 +25,8 @@
   <xsl:template match="@xml:base" mode="docx2hub:modify">
     <xsl:attribute name="{name()}" 
       select="if($out-dir-replacement eq '.docx.out/') 
-              then replace(., '\.doc([xm]).tmp/', '.doc$1.out/')
-              else replace(., '\.doc[xm].tmp/', $out-dir-replacement)"/>
+              then replace(., '\.doc([xm])\.tmp/', '.doc$1.out/')
+              else replace(., '\.doc[xm]\.tmp/', $out-dir-replacement)"/>
   </xsl:template>
 
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">

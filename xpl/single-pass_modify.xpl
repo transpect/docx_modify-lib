@@ -24,7 +24,7 @@
   
   <p:split-sequence name="eventually-split" test="position() = 1" initial-only="true">
     <p:documentation>By default, split will return one document: the compound-document (at the port 'matched'). 
-      Any additional sources given are splitted to the 'not-matched' port.</p:documentation>
+      Any additional sources given are put into the 'not-matched' bucket.</p:documentation>
   </p:split-sequence>
 
   <tr:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
