@@ -22,6 +22,12 @@
     </xsl:copy>
   </xsl:template>
   
+  <xsl:template match="@xml:base[not(../@mc:Ignorable)][matches(.,'word/\w+\.xml$')]" mode="docx2hub:export">
+    <xsl:attribute name="mc:Ignorable" select="'w14 w15 wp14 w16se'"/>
+  </xsl:template>
+  
+  <xsl:template match="@xml:base"  mode="docx2hub:export"/>
+  
   <xsl:template match="@xml:base" mode="docx2hub:modify">
     <xsl:attribute name="{name()}" 
       select="if($out-dir-replacement eq '.docx.out/') 
@@ -66,15 +72,17 @@
       <xsl:variable name="new-docVars" as="element(w:docVar)*">
         <xsl:apply-templates select="//processing-instruction()[name() = 'docx_modify_docVar']" mode="docx2hub:postprocess"/>
       </xsl:variable>
-      <w:docVars>
-        <xsl:for-each-group select="w:docVars/w:docVar, $new-docVars" group-by="@w:name">
-          <xsl:copy>
-            <xsl:for-each select="current-group()[last()]">
-              <xsl:copy-of select="@w:name, @w:val"/>
-            </xsl:for-each>
-          </xsl:copy>
-        </xsl:for-each-group>
-      </w:docVars>
+      <xsl:if test="exists(w:docVars/w:docVar | $new-docVars)">
+        <w:docVars>
+          <xsl:for-each-group select="w:docVars/w:docVar, $new-docVars" group-by="@w:name">
+            <xsl:copy>
+              <xsl:for-each select="current-group()[last()]">
+                <xsl:copy-of select="@w:name, @w:val"/>
+              </xsl:for-each>
+            </xsl:copy>
+          </xsl:for-each-group>
+        </w:docVars>
+      </xsl:if>
     </xsl:copy>
   </xsl:template>
   
