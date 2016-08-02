@@ -7,15 +7,19 @@
   exclude-result-prefixes="xs docx2hub w_strict"
   version="2.0">
   
-  <xsl:import href="identity.xsl"/>
-  
-  <xsl:template match="w_strict:*" mode="docx2hub:modify">
+  <xsl:template match="@* | *" mode="#default">
+    <xsl:copy copy-namespaces="no">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="w_strict:*" mode="#default">
     <xsl:element name="{name()}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="@w_strict:*" mode="docx2hub:modify">
+  <xsl:template match="@w_strict:*" mode="#default">
     <xsl:attribute name="{name()}" select="."/>
   </xsl:template>
   
