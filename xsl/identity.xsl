@@ -8,9 +8,9 @@
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:docx2hub="http://transpect.io/docx2hub"
-  exclude-result-prefixes="xs rel docx2hub"
+  exclude-result-prefixes="xs rel docx2hub c"
   version="2.0">
-  
+
   <xsl:param name="debug" select="'no'"/>
   
   <xsl:param name="out-dir-replacement" select="'.docx.out/'"/>
@@ -37,10 +37,22 @@
 
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
     <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
+    <xsl:variable name="bookmark-PI-genIds" as="xs:string*"
+      select="for $pi in //processing-instruction()[name() = 'docx_modify_docVar_bookmark'] return generate-id($pi)"/>
+    <xsl:variable name="new-docVars" as="element(w:docVar)*">
+      <xsl:apply-templates select="//processing-instruction()[name() = ('docx_modify_docVar', 'docx_modify_docVar_bookmark')]"
+        mode="docx2hub:postprocess">
+        <xsl:with-param name="genIds" as="xs:string*" tunnel="yes" select="$bookmark-PI-genIds"/>
+      </xsl:apply-templates>
+    </xsl:variable>
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
       <c:files>
-        <xsl:apply-templates select="node()" mode="#current"/>
+        <xsl:apply-templates select="node()" mode="#current">
+          <xsl:with-param name="new-docVars" select="$new-docVars" tunnel="yes"/>
+          <xsl:with-param name="max-bookmark-id" as="xs:integer" tunnel="yes" 
+            select="xs:integer(max((-1, for $id in //w:bookmarkStart/@w:id return number($id))))"/>
+        </xsl:apply-templates>
         <xsl:sequence select="$new-content"/>
       </c:files>
     </xsl:copy>
@@ -67,11 +79,9 @@
     Example <?docx_modify_docVar name value string?> → <w:docVar w:name="name" w:val="value string"/> 
     Please note that w:settings has an @xml:base attribute. The template matching *[xml:base] has higher priority. -->
   <xsl:template match="w:settings" mode="docx2hub:export">
+    <xsl:param name="new-docVars" as="element(w:docVar)*" tunnel="yes"/>
     <xsl:copy>
       <xsl:apply-templates select="@*, * except w:docVars" mode="#current"/>
-      <xsl:variable name="new-docVars" as="element(w:docVar)*">
-        <xsl:apply-templates select="//processing-instruction()[name() = 'docx_modify_docVar']" mode="docx2hub:postprocess"/>
-      </xsl:variable>
       <xsl:if test="exists(w:docVars/w:docVar | $new-docVars)">
         <w:docVars>
           <xsl:for-each-group select="w:docVars/w:docVar, $new-docVars" group-by="@w:name">
@@ -86,16 +96,46 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="processing-instruction()[name() = 'docx_modify_docVar']" mode="docx2hub:postprocess">
+  <xsl:template match="w:r[w:t[processing-instruction()[name() = 'docx_modify_docVar_bookmark']]]" mode="docx2hub:export">
+    <xsl:param name="max-bookmark-id" as="xs:integer" tunnel="yes"/>
+    <xsl:param name="new-docVars" tunnel="yes" as="element(w:docVar)*"/>
+    <xsl:variable name="pi" as="processing-instruction(docx_modify_docVar_bookmark)+" 
+      select="w:t/processing-instruction()[name() = 'docx_modify_docVar_bookmark']"/>
+    <xsl:for-each select="$pi">
+      <xsl:variable name="matching-docVar" select="$new-docVars[@genId = generate-id(current())]" as="element(w:docVar)"/>
+      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@pos)"/>
+      <w:bookmarkStart w:id="{$num}" w:name="{$matching-docVar/@w:name}"/> 
+    </xsl:for-each>
+    <xsl:next-match/>
+    <xsl:for-each select="reverse($pi)">
+      <xsl:variable name="matching-docVar" select="$new-docVars[@genId = generate-id(current())]" as="element(w:docVar)"/>
+      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@pos)"/>
+      <w:bookmarkEnd w:id="{$num}"/> 
+    </xsl:for-each>
+  </xsl:template>
+  
+  <xsl:template match="processing-instruction()[name() = ('docx_modify_docVar', 'docx_modify_docVar_bookmark')]" mode="docx2hub:export"/>
+
+  <xsl:template match="processing-instruction()[name() = ('docx_modify_docVar', 'docx_modify_docVar_bookmark')]" mode="docx2hub:postprocess">
+    <xsl:param name="genIds" as="xs:string*" tunnel="yes"/>
+    <xsl:variable name="pos" select="index-of($genIds, generate-id())" as="xs:integer?"/>
+    <xsl:variable name="context" as="processing-instruction()" select="."/>
     <xsl:analyze-string select="." regex="^\s*(\i\c*)\s+(.+)$">
       <xsl:matching-substring>
-        <w:docVar w:name="{regex-group(1)}" w:val="{regex-group(2)}"/>    
+        <w:docVar w:name="{string-join((regex-group(1), string($pos)[normalize-space()]), '_')}" w:val="{regex-group(2)}">
+          <xsl:if test="name($context) = 'docx_modify_docVar_bookmark'">
+            <xsl:attribute name="genId" select="generate-id($context)"/>
+            <xsl:attribute name="pos" select="$pos"/>
+          </xsl:if>
+        </w:docVar>    
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <w:docVar w:name="invalid_docVarName" w:val="{.}"/>
       </xsl:non-matching-substring>
     </xsl:analyze-string>
   </xsl:template>
+  
+  <xsl:template match="@genId | @pos" mode="docx2hub:export"/>
   
   <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
     <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]/@Target">
