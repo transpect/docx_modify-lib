@@ -135,10 +135,10 @@
     
     <p:for-each name="copy">
       <p:iteration-source select="/c:files/c:file"/>
-      <p:variable name="base-dir" select="/c:files/@xml:base">
+      <p:variable name="base-dir" select="replace(/c:files/@xml:base, '([^/])$', '$1/')">
         <p:pipe port="result" step="unzip"/>
       </p:variable>
-      <p:variable name="new-dir" select="replace($base-dir, '(\.do[ct][mx])\.tmp', '$1.out')"/>
+      <p:variable name="new-dir" select="replace($base-dir, '(\.do[ct][mx])\.tmp/$', '$1.out/')"/>
       <p:variable name="name" select="/*/@name">
         <p:pipe port="current" step="copy"/>
       </p:variable>
