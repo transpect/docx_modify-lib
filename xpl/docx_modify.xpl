@@ -86,6 +86,7 @@
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl" />
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl" />
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
+  <p:import href="http://transpect.io/xproc-util/zip/xpl/zip.xpl" />
   <p:import href="http://transpect.io/calabash-extensions/transpect-lib.xpl" />
   
   <tr:file-uri name="file-uri">
@@ -253,7 +254,7 @@
       options using a cx:options document with cx:option name/value entries.</p:documentation>
       <p:with-param name="file" select="$file-uri"/>
       <p:with-param name="debug" select="$debug"/>
-      <p:with-param name="debug-dir-uri" select="$debug-dir-uri"/>
+      <p:with-param name="debug-dir-uri" select="replace($debug-dir-uri, '^(.+)\?.*$', '$1')"/>
       <p:input port="parameters"><p:empty/></p:input>
       <p:input port="source">
         <p:pipe step="docx_modify" port="options"/> 
@@ -267,7 +268,7 @@
             <xsl:template name="main">
               <cx:options>
                 <cx:option name="debug" value="{$debug}"/>
-                <cx:option name="debug-dir-uri" value="{$debug-dir-uri}"/>
+                <cx:option name="debug-dir-uri" value="{replace($debug-dir-uri, '^(.+)\?.*$', '$1')}"/>
                 <cx:option name="file" value="{$file}"/>
                 <xsl:sequence select="collection()/cx:options/cx:option"/>
               </cx:options>
@@ -390,16 +391,17 @@
     </p:xslt>
     
     <p:sink/>
-    
-    <cx:zip compression-method="deflated" compression-level="default" command="create" name="zip" cx:depends-on="zip-file-uri">
+      
+    <tr:zip name="zip" cx:depends-on="zip-file-uri" compression-method="deflated" compression-level="default" command="create">
       <p:with-option name="href" select="/c:result" >
         <p:pipe port="result" step="zip-file-uri"/>
       </p:with-option>
-      <p:input port="source"><p:empty/></p:input>
-      <p:input port="manifest">
+      <p:input port="source">
         <p:pipe step="zip-manifest" port="result"/>
       </p:input>
-    </cx:zip>
+      <p:with-option name="debug" select="$debug"/>
+      <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    </tr:zip>
     
     <p:choose>
       <p:when test="not($debug = 'yes')">
