@@ -403,7 +403,7 @@
       <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     </tr:zip>
     
-    <p:choose>
+    <p:choose cx:depends-on="zip">
       <p:when test="not($debug = 'yes')">
         <cxf:delete recursive="true" fail-on-error="false">
           <p:with-option name="href" select="/c:files/@xml:base">
