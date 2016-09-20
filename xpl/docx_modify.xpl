@@ -87,7 +87,8 @@
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl" />
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
   <p:import href="http://transpect.io/xproc-util/zip/xpl/zip.xpl" />
-  <p:import href="http://transpect.io/calabash-extensions/transpect-lib.xpl" />
+<!--  <p:import href="http://transpect.io/calabash-extensions/transpect-lib.xpl" />-->
+  <p:import href="http://transpect.io/calabash-extensions/unzip-extension/unzip-declaration.xpl"/>
   
   <tr:file-uri name="file-uri">
     <p:with-option name="filename" select="$file"/>
