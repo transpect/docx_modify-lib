@@ -35,7 +35,9 @@
                                          'http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects',
                                          'http://schemas.microsoft.com/office/2006/relationships/ui/extensibility'))
                           ]/@Id,
-                          distinct-values($specific-paragraphs/(descendant::a:blip/(@r:embed | @r:link), descendant::v:imagedata/@r:id))" />
+                          distinct-values($specific-paragraphs/(descendant::a:blip/(@r:embed | @r:link),
+                                                                descendant::v:imagedata/@r:id,
+                                                                descendant::v:fill/@r:id))" />
   </xsl:function> 
 
   <xsl:function name="docx2hub:containerrel-ids" as="xs:string*">
