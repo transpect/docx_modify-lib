@@ -81,6 +81,11 @@
   <p:output port="result" primary="true">
     <p:documentation>A c:result element with an export-uri attribute of the modified docx file.</p:documentation>
   </p:output>
+  <p:output port="modified-single-tree">
+    <p:documentation>A /w:root document. This output is mostly for Schematron checks. If you want Schematron
+    with srcpaths</p:documentation>
+    <p:pipe port="modified-single-tree" step="group"/>
+  </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl" />
@@ -94,7 +99,11 @@
     <p:with-option name="filename" select="$file"/>
   </tr:file-uri>
 
-  <p:group>
+  <p:group name="group">
+    <p:output port="result" primary="true"/>
+    <p:output port="modified-single-tree">
+      <p:pipe port="result" step="export"/>
+    </p:output>
     <p:variable name="basename" select="replace(/*/@lastpath, '\.do[ct][mx]$', '')"/>
     <p:variable name="os-path" select="/*/@os-path"/>
     <p:variable name="file-uri" select="/*/@local-href"/>
@@ -161,12 +170,12 @@
     
     <p:sink/>
     
-    <p:add-attribute name="params" attribute-name="value" match="/c:param-set/c:param[@name = 'error-msg-file-path']">
+    <p:add-attribute name="params0" attribute-name="value" match="/c:param-set/c:param[@name = 'error-msg-file-path']">
       <p:with-option name="attribute-value" select="replace( static-base-uri(), '/wml2hub.xpl', '' )"/>
       <p:input port="source">
         <p:inline>
           <c:param-set>
-            <c:param name="srcpaths" value="no"/>
+            <c:param name="srcpaths"/>
             <c:param name="error-msg-file-path"/>
             <c:param name="hub-version" value="1.1"/>
             <c:param name="unwrap-tooltip-links" value="no"/>
@@ -174,7 +183,11 @@
         </p:inline>
       </p:input>
     </p:add-attribute>
-    
+
+    <p:add-attribute name="params" attribute-name="value" match="/c:param-set/c:param[@name = 'srcpaths']">
+      <p:with-option name="attribute-value" select="$docx2hub-add-srcpath-attributes"/>
+    </p:add-attribute>
+
     <p:sink/>
     
     <tr:xslt-mode msg="yes" mode="insert-xpath" name="compound-document">
