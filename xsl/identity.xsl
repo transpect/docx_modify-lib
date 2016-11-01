@@ -112,13 +112,13 @@
       select="w:t/processing-instruction()[name() = 'docx_modify_docVar_bookmark']"/>
     <xsl:for-each select="$pi">
       <xsl:variable name="matching-docVar" select="$new-docVars[@genId = generate-id(current())]" as="element(w:docVar)"/>
-      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@pos)"/>
+      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@_pos)"/>
       <w:bookmarkStart w:id="{$num}" w:name="{$matching-docVar/@w:name}"/> 
     </xsl:for-each>
     <xsl:next-match/>
     <xsl:for-each select="reverse($pi)">
       <xsl:variable name="matching-docVar" select="$new-docVars[@genId = generate-id(current())]" as="element(w:docVar)"/>
-      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@pos)"/>
+      <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@_pos)"/>
       <w:bookmarkEnd w:id="{$num}"/> 
     </xsl:for-each>
   </xsl:template>
@@ -134,9 +134,9 @@
         <w:docVar w:name="{string-join((regex-group(1), string($pos)[normalize-space()]), '_')}" w:val="{regex-group(2)}">
           <xsl:if test="name($context) = 'docx_modify_docVar_bookmark'">
             <xsl:attribute name="genId" select="generate-id($context)"/>
-            <xsl:attribute name="pos" select="$pos"/>
+            <xsl:attribute name="_pos" select="$pos"/>
           </xsl:if>
-        </w:docVar>    
+        </w:docVar>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <w:docVar w:name="invalid_docVarName" w:val="{.}"/>
@@ -144,7 +144,7 @@
     </xsl:analyze-string>
   </xsl:template>
   
-  <xsl:template match="@genId | @pos" mode="docx2hub:export"/>
+  <xsl:template match="@genId | @_pos" mode="docx2hub:export"/>
   
   <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
     <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]/@Target">
