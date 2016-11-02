@@ -9,6 +9,7 @@
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram"
   xmlns:docx2hub = "http://transpect.io/docx2hub"
   exclude-result-prefixes="xs docx2hub"
   version="2.0">
@@ -33,9 +34,14 @@
                                          'http://schemas.microsoft.com/office/2006/relationships/vbaProject',
                                          'http://schemas.microsoft.com/office/2006/relationships/keyMapCustomizations',
                                          'http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects',
-                                         'http://schemas.microsoft.com/office/2006/relationships/ui/extensibility'))
+                                         'http://schemas.microsoft.com/office/2006/relationships/ui/extensibility',
+                                         'http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData',
+                                         'http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout',
+                                         'http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle',
+                                         'http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors'))
                           ]/@Id,
                           distinct-values($specific-paragraphs/(descendant::a:blip/(@r:embed | @r:link),
+                                                                descendant::dgm:relIds/(@r:dm | @r:lo | @r:qs | @r:cs),
                                                                 descendant::v:imagedata/@r:id,
                                                                 descendant::v:fill/@r:id))" />
   </xsl:function> 
@@ -82,7 +88,9 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="a:blip/@r:embed | a:blip/@r:link | @r:id[ancestor::w:body]" mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
+  <xsl:template match="a:blip/@r:embed | a:blip/@r:link | @r:id[ancestor::w:body] 
+                       | dgm:relIds/@r:dm | dgm:relIds/@r:lo | dgm:relIds/@r:qs | dgm:relIds/@r:cs" 
+    mode="docx2hub:modify docx2hub:remove-customizations-and-macros">
     <xsl:param name="docrel-ids" as="xs:string*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="concat('rId', index-of($docrel-ids, .))"/>
   </xsl:template>
