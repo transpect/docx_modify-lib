@@ -15,27 +15,25 @@
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
   
-  <p:input port="source" primary="true" />
+  <p:input port="source" primary="true" sequence="true"/>
   <p:input port="stylesheet" />
   <p:input port="parameters" kind="parameter" primary="true"/>
   <p:output port="result" primary="true" />
   
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl"/>
   
-  <p:split-sequence name="eventually-split" test="position() = 1" initial-only="true">
-    <p:documentation>By default, split will return one document: the compound-document (at the port 'matched'). 
-      Any additional sources given are put into the 'not-matched' bucket.</p:documentation>
-  </p:split-sequence>
-
   <tr:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
     <p:input port="source">
-      <p:pipe step="eventually-split" port="matched"/>
-      <p:pipe step="eventually-split" port="not-matched"/>
+      <p:pipe port="source" step="modify"/>
     </p:input>
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:input port="models"><p:empty/></p:input>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="debug" select="$debug">
+      <p:empty/>
+    </p:with-option>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri">
+      <p:empty/>
+    </p:with-option>
   </tr:xslt-mode>
   
 </p:declare-step>

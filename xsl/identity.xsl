@@ -24,26 +24,83 @@
   
   <xsl:param name="out-dir-replacement" select="'.docx.out/'"/>
   <xsl:param name="media-path" select="'none'"/>
-  
-  <xsl:template match="* | @*" mode="docx2hub:identity docx2hub:modify docx2hub:export">
+
+  <!-- If there is a template single-tree document, we’ll automatically use its styles etc. -->
+  <xsl:variable name="template-root" as="document-node(element(w:root))?" select="(collection()[w:root])[2]"/>
+
+  <xsl:template match="* | @*" mode="docx2hub:identity docx2hub:modify docx2hub:export docx2hub:template">
     <xsl:copy>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:copy>
   </xsl:template>
+
+  <!-- mode docx2hub:modify / docx2hub:template
+       Merge with template styles if template is present -->
+
+  <xsl:template match="w:root[exists($template-root)]" mode="docx2hub:modify">
+    <xsl:next-match>
+      <xsl:with-param name="max-abstractNumId" as="xs:integer" tunnel="yes"
+        select="xs:integer((max(w:numbering/w:abstractNum/@w:abstractNumId), 0)[1])"/>
+      <xsl:with-param name="max-numId" as="xs:integer" tunnel="yes"
+        select="xs:integer((max(w:numbering/w:num/@w:numId), 0)[1])"/>
+    </xsl:next-match>
+  </xsl:template>
+
+  <xsl:template match="w:styles[exists($template-root)]" mode="docx2hub:modify">
+    <xsl:param name="max-abstractNumId" as="xs:integer" tunnel="yes"/>
+    <xsl:param name="max-numId" as="xs:integer" tunnel="yes"/>
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:apply-templates select="$template-root/w:root/w:styles/*" mode="docx2hub:template">
+        <xsl:with-param name="max-abstractNumId" as="xs:integer" tunnel="yes" select="$max-abstractNumId"/>
+        <xsl:with-param name="max-numId" as="xs:integer" tunnel="yes" select="$max-numId"/>
+      </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="@w:numId | w:numId/@w:val" mode="docx2hub:template">
+    <xsl:param name="max-numId" as="xs:integer" tunnel="yes"/>
+    <xsl:attribute name="{name()}" select=". + $max-numId"></xsl:attribute>    
+  </xsl:template>
+
+  <xsl:template match="@w:numId[. = '0'] | w:numId/@w:val[. = '0']" mode="docx2hub:template">
+    <xsl:copy/>
+  </xsl:template>
   
+  <xsl:template match="@w:abstractNumId | w:abstractNumId/@w:val" mode="docx2hub:template">
+    <xsl:param name="max-abstractNumId" as="xs:integer" tunnel="yes"/>
+    <xsl:attribute name="{name()}" select=". + $max-abstractNumId"/>    
+  </xsl:template>
+  
+  <xsl:template match="w:numbering[exists($template-root)]" mode="docx2hub:modify">
+    <xsl:param name="max-abstractNumId" as="xs:integer" tunnel="yes"/>
+    <xsl:param name="max-numId" as="xs:integer" tunnel="yes"/>
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:comment> Document abstract numberings: </xsl:comment>
+      <xsl:apply-templates select="w:abstractNum" mode="#current"/>
+      <xsl:comment> Template abstract numberings: </xsl:comment>
+      <xsl:apply-templates select="$template-root/w:root/w:numbering/w:abstractNum" mode="docx2hub:template">
+        <xsl:with-param name="max-abstractNumId" as="xs:integer" tunnel="yes" select="$max-abstractNumId"/>
+      </xsl:apply-templates>
+      <xsl:comment> Document numberings: </xsl:comment>
+      <xsl:apply-templates select="w:num" mode="#current"/>
+      <xsl:comment> Template numberings: </xsl:comment>
+      <xsl:apply-templates select="$template-root/w:root/w:numbering/w:num" mode="docx2hub:template">
+        <xsl:with-param name="max-abstractNumId" as="xs:integer" tunnel="yes" select="$max-abstractNumId"/>
+        <xsl:with-param name="max-numId" as="xs:integer" tunnel="yes" select="$max-numId"/>
+      </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- mode docx2hub:export -->
+
   <xsl:template match="@xml:base[not(../@mc:Ignorable)][matches(.,'word/\w+\.xml$')]" mode="docx2hub:export">
     <xsl:attribute name="mc:Ignorable" select="'w14 w15 wp14 w16se'"/>
   </xsl:template>
   
   <xsl:template match="@xml:base"  mode="docx2hub:export"/>
   
-  <xsl:template match="@xml:base" mode="docx2hub:modify">
-    <xsl:attribute name="{name()}" 
-      select="if($out-dir-replacement eq '.docx.out/') 
-              then replace(., '\.doc([xm])\.tmp/', '.doc$1.out/')
-              else replace(., '\.doc[xm]\.tmp/', $out-dir-replacement)"/>
-  </xsl:template>
-
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
     <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
     <xsl:variable name="bookmark-PI-genIds" as="xs:string*"
