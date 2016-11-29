@@ -143,6 +143,12 @@
       </p:variable>
       <tr:file-uri name="template-file-uri">
         <p:with-option name="filename" select="$template-file"/>
+        <p:input port="resolver">
+          <p:document href="http://transpect.io/xslt-util/xslt-based-catalog-resolver/xsl/resolve-uri-by-catalog.xsl"/>
+        </p:input>
+        <p:input port="catalog">
+          <p:document href="http://this.transpect.io/xmlcatalog/catalog.xml"/>
+        </p:input>
       </tr:file-uri>
       
       <docx2hub:single-tree name="template-single-tree-1">
