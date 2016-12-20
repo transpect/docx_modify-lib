@@ -120,7 +120,39 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
+  <xsl:template match="w:r[every $e in * satisfies (name($e) = ('w:sym'))]
+                          [w:sym/@w:font = $docx2hub:symbol-font-names]" mode="docx2hub:modify">
+    <xsl:variable name="replacement" as="item()*"><!-- w:sym or a 'text' element, and PIs -->
+      <xsl:apply-templates select="w:sym" mode="wml-to-dbk">
+        <xsl:with-param name="leave-unmappable-symbols-unchanged" select="true()" tunnel="yes"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:variable name="replacement-string-value" as="xs:string?" select="string-join($replacement/(self::text() | self::attribute()), '')"/>
+    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?" 
+      select="docx2hub:font-map(w:sym/@w:font)/symbols
+                /symbol[@char = $replacement-string-value]
+                       [if(current()/w:sym) then current()/w:sym/@w:char = @number else true()]"/>
+    <xsl:copy>
+      <w:rPr>
+        <xsl:choose>
+          <xsl:when test="$replacement/@w:char = ../../w:sym/@w:char">
+            <xsl:sequence select="."/>
+          </xsl:when>
+          <xsl:when test="$replacement-symbol-map-entry/@font">
+            <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
+          </xsl:otherwise>
+        </xsl:choose>    
+      </w:rPr>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+    
+    
+  </xsl:template>
+
   <xsl:template match="w:sym[@w:font = $docx2hub:symbol-font-names]" mode="docx2hub:modify">
     <xsl:variable name="replacement" as="item()*"><!-- w:sym or a 'text' element -->
       <xsl:apply-templates select="." mode="wml-to-dbk">
