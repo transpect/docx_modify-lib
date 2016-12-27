@@ -12,6 +12,8 @@
   <xsl:import href="http://transpect.io/docx2hub/xsl/main.xsl"/>
   <xsl:import href="http://transpect.io/docx_modify/xsl/identity.xsl"/>
   
+  <xsl:param name="charmap-policy" select="'msoffice'" as="xs:string"/>
+  
   <xsl:template match="w:lvlText[../w:rPr/w:rFonts/@w:ascii=$docx2hub:symbol-font-names]" mode="docx2hub:modify">
     <xsl:variable name="replacement" as="item()*">
       <xsl:apply-templates select="@w:val" mode="wml-to-dbk"/>
