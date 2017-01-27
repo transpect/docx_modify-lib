@@ -47,7 +47,8 @@
   </xsl:template>
 
   <xsl:template match="w:t[docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
-    <xsl:variable name="map" select="docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii)" as="document-node(element(symbols))?"/>
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t(.)"/>
+    <xsl:variable name="map" select="docx2hub:font-map($applied-font)" as="document-node(element(symbols))?"/>
     <xsl:variable name="resolved-unicode-char" as="attribute(char)?" select="(key('symbol-by-entity', ., $map)/@char)[1]"/>
     <xsl:choose>
       <xsl:when test="$resolved-unicode-char">
@@ -70,7 +71,7 @@
 
   <xsl:template match="w:rPr[
                         ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
-                      ]/w:rFonts" mode="docx2hub:modify">
+                      ]/w:rFonts[@w:ascii]" mode="docx2hub:modify">
     <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
       select="key('symbol-by-entity', ., docx2hub:font-map(@w:ascii))"/>
     <xsl:choose>
@@ -85,14 +86,18 @@
   
   <xsl:function name="docx2hub:text-is-rFonts-only-symbol" as="xs:boolean">
     <xsl:param name="w-t" as="element(w:t)"/>
-    <xsl:sequence select="boolean(
-                            $w-t[
-                              string-length(.) = 1 and 
-                              not(../w:lvlText) and 
-                              ../w:rPr/w:rFonts/@w:ascii = $docx2hub:symbol-font-names and
-                              key('symbol-by-entity', ., docx2hub:font-map(../w:rPr/w:rFonts/@w:ascii))/@char
-                            ]
-                          )"/>
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t($w-t)"/>
+    <xsl:variable name="font-map" as="document-node(element(symbols))?" select="docx2hub:font-map($applied-font)"/>
+    <xsl:sequence select="if (exists($applied-font) and exists($font-map)) 
+                          then boolean(
+                                $w-t[
+                                  string-length(.) = 1 and 
+                                  not(../w:lvlText) and 
+                                  $applied-font = $docx2hub:symbol-font-names and
+                                  key('symbol-by-entity', ., docx2hub:font-map($applied-font))/@char
+                                ]
+                               )
+                           else false()"/>
   </xsl:function>
   
   <!-- what if there is no w:rFonts element? Then we’d have to match the rPr and insert the w:rFonts at
@@ -151,8 +156,6 @@
       </w:rPr>
       <xsl:apply-templates mode="#current"/>
     </xsl:copy>
-    
-    
   </xsl:template>
 
   <xsl:template match="w:sym[@w:font = $docx2hub:symbol-font-names]" mode="docx2hub:modify">
@@ -176,6 +179,10 @@
 
   <xsl:template match="processing-instruction()[name() = 'letex']" mode="docx2hub:modify">
     <xsl:processing-instruction name="docx_modify_docVar" select="concat('letex_', generate-id(), ' ', .)"/>
+  </xsl:template>
+
+  <xsl:template match="w:style/w:rPr/w:rFonts[@w:ascii = $docx2hub:symbol-font-names]" mode="docx2hub:modify">
+    <xsl:sequence select="$docx2hub:symbol-replacement-rfonts"/>
   </xsl:template>
 
 </xsl:stylesheet>
