@@ -25,6 +25,11 @@
     Please note that you cannot generate docm or dotm files with this step because the resulting zip needs to be
     digitally signed, which is a task that we cannot do yet with XProc.</p:documentation>
   </p:option>
+  <p:option name="copy-from-template-file-regex" 
+    select="'(^vba|\.bin$|/word/(theme|embeddings|glossary|media)|/customUI|/customXml|(_rels/)?customizations.xml(\.rels)?)'">
+    <p:documentation>If template-file is non-empty, this regex will be used to match file names (c:file/@name attributes in
+      tr:unzip output) in the unzipped template file against. Files that match </p:documentation>
+  </p:option>
   <p:option name="apply-changemarkup" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>Apply all change markup on the compound word document.</p>
@@ -109,8 +114,14 @@
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl" />
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
   <p:import href="http://transpect.io/xproc-util/zip/xpl/zip.xpl" />
+<<<<<<< .mine
+  <p:import href="http://transpect.io/calabash-extensions/unzip-extension/unzip-declaration.xpl"/>
+||||||| .r575
+  <p:import href="http://transpect.io/calabash-extensions/transpect-lib.xpl" />
+=======
   <p:import href="http://transpect.io/docx2hub/xpl/single-tree.xpl" />
   <p:import href="http://transpect.io/calabash-extensions/unzip-extension/unzip-declaration.xpl"/>
+>>>>>>> .r586
   
   <p:parameters name="consolidate-params">
     <p:input port="parameters">
