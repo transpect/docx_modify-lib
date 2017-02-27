@@ -72,7 +72,7 @@ if [ -z $DEBUGDIR ]; then
 fi
 
 if [ -z $HEAP ]; then
-    HEAP=1024m
+    HEAP=2048m
 fi
 
 if [ -z $ADAPTIONS_DIR ]; then
