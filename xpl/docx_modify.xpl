@@ -59,6 +59,11 @@
         where to find the files. Otherwise it should be 'none'.</p>
     </p:documentation>
   </p:option>
+  <p:option name="mathtype2omml" required="false" select="'no'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Activates use of mathtype2mml extension (and mml2omml conversion. To be done ...)</p>
+    </p:documentation>
+  </p:option>
 
   <p:input port="xslt">
     <p:document href="../xsl/identity.xsl"/>
@@ -132,6 +137,7 @@
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
+    <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
     <p:with-option name="docx" select="/*/@os-path"/>
   </docx2hub:single-tree>
  
@@ -161,6 +167,7 @@
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
         <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
+        <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="docx" select="/*/@os-path"/>
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
           <p:documentation>We assume that the input file directory is writeable while the template file directory maybe not.</p:documentation>
