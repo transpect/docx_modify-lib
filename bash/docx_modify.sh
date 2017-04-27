@@ -98,3 +98,6 @@ if [ ! -z $MODIFY_XPL ]; then
 fi
 
 LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" $MODIFY_XPL "$XPL" file="$DOCX" debug=$DEBUG debug-dir-uri=$DEBUGDIR
+if [ "$DEBUG" == "no" ]; then
+  rm -rf $DOCX.tmp/
+fi
