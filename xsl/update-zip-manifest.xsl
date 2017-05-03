@@ -34,6 +34,8 @@
   
   <xsl:variable name="base-uri" select="base-uri(/*)" as="xs:string"/>
   
+  <xsl:template match="c:entry[ends-with(@name, '/')]" mode="update-zip-manifest" priority="1.5"/>
+  
   <xsl:template match="c:entry | @*" mode="update-zip-manifest">
     <xsl:copy-of select="."/>
   </xsl:template>

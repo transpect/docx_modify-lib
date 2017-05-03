@@ -295,8 +295,6 @@
     </p:input>
   </p:xslt>
   
-  <p:delete match="/c:files/c:directory"/>
-  
   <tr:store-debug>
     <p:with-option name="pipeline-step" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/zip-manifesto')">
       <p:pipe port="result" step="file-uri"/>
