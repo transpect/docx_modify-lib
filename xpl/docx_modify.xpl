@@ -162,7 +162,7 @@
         </p:input>
       </tr:file-uri>
       
-      <docx2hub:single-tree name="template-single-tree-1">
+      <docx2hub:single-tree-enhanced name="template-single-tree-1">
         <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
@@ -172,7 +172,7 @@
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
           <p:documentation>We assume that the input file directory is writeable while the template file directory maybe not.</p:documentation>
         </p:with-option>
-      </docx2hub:single-tree>
+      </docx2hub:single-tree-enhanced>
 
     </p:when>
     <p:otherwise>
