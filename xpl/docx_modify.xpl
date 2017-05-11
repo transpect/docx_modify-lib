@@ -119,7 +119,7 @@
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl" />
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
   <p:import href="http://transpect.io/xproc-util/zip/xpl/zip.xpl" />
-  <p:import href="http://transpect.io/docx2hub/xpl/single-tree.xpl" />
+  <p:import href="http://transpect.io/docx2hub/xpl/single-tree-enhanced.xpl" />
   <p:import href="http://transpect.io/calabash-extensions/unzip-extension/unzip-declaration.xpl"/>
   
   <p:parameters name="consolidate-params">
@@ -132,14 +132,14 @@
     <p:with-option name="filename" select="$file"/>
   </tr:file-uri>
   
-  <docx2hub:single-tree name="single-tree">
+  <docx2hub:single-tree-enhanced name="single-tree">
     <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
     <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
     <p:with-option name="docx" select="/*/@os-path"/>
-  </docx2hub:single-tree>
+  </docx2hub:single-tree-enhanced>
  
   <p:sink/>
 
