@@ -83,7 +83,7 @@
   <p:input port="xpl">
     <p:document href="single-pass_modify.xpl"/>
     <p:documentation>See the 'xslt' port’s documentation. You may supply another pipeline that will be executed instead of 
-      the default single-pass modify pipeline. You pipeline typically consists of chained transformations in different modes, 
+      the default single-pass modify pipeline. Your pipeline typically consists of chained transformations in different modes, 
       as invoked by tr:xslt-mode. Of course you can supply other pipelines with the same signature (single 
       w:root input/output documents).</p:documentation>
   </p:input>
@@ -95,7 +95,7 @@
     expanded docx template.</p:documentation>
   </p:input>
   <p:input port="options">
-    <p:documentation>Options to the modifying XProc pipeline, as /cx:options/cx:options[@name]/@value
+    <p:documentation>Options to the modifying XProc pipeline, as /cx:options/cx:option[@name]/@value
       documents.</p:documentation>
   </p:input>
   <p:input port="update-zip-manifest-xslt">
