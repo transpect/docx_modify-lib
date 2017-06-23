@@ -25,6 +25,7 @@
   <tr:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
     <p:input port="source">
       <p:pipe port="source" step="modify"/>
+      <p:document href="http://this.transpect.io/xmlcatalog/catalog.xml"/>
     </p:input>
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:input port="models"><p:empty/></p:input>
