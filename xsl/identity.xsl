@@ -117,7 +117,7 @@
         <xsl:apply-templates select="node()" mode="#current">
           <xsl:with-param name="new-docVars" select="$new-docVars" tunnel="yes"/>
           <xsl:with-param name="max-bookmark-id" as="xs:integer" tunnel="yes" 
-            select="xs:integer(max((-1, for $id in //w:bookmarkStart/@w:id return number($id))))"/>
+            select="xs:integer(max((-1, for $id in (for $b in //w:bookmarkStart/@w:id return tokenize($b,'\s+')) return number($id))))"/>
         </xsl:apply-templates>
         <xsl:sequence select="$new-content"/>
       </c:files>
