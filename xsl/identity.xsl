@@ -6,6 +6,7 @@
   xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"
   xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:w10="urn:schemas-microsoft-com:office:word"
   xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
+  xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"
   xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
   xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
@@ -96,7 +97,7 @@
   <!-- mode docx2hub:export -->
 
   <xsl:template match="@xml:base[not(../@mc:Ignorable)][matches(.,'word/\w+\.xml$')]" mode="docx2hub:export">
-    <xsl:attribute name="mc:Ignorable" select="'w14 w15 wp14 w16se'"/>
+    <xsl:attribute name="mc:Ignorable" select="'w14 w15 wp14 w16se w16cid'"/>
   </xsl:template>
   
   <xsl:template match="@xml:base"  mode="docx2hub:export"/>
