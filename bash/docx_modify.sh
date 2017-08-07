@@ -97,7 +97,11 @@ if [ ! -z $MODIFY_XPL ]; then
   MODIFY_XPL="-i xpl=$MODIFY_XPL"
 fi
 
-LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" $MODIFY_XPL "$XPL" file="$DOCX" debug=$DEBUG debug-dir-uri=$DEBUGDIR
+if [ -z $MATHTYPE2OMML ]; then
+  MATHTYPE2OMML=yes
+fi
+
+LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
 if [ "$DEBUG" == "no" ]; then
   rm -rf $DOCX.tmp/
 fi
