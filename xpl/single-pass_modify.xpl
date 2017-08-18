@@ -21,7 +21,8 @@
   <p:output port="result" primary="true" />
   
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl"/>
-  
+  <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
+
   <tr:xslt-mode msg="yes" mode="docx2hub:modify" prefix="docx_modify/modify">
     <p:input port="source">
       <p:pipe port="source" step="modify"/>
