@@ -61,7 +61,9 @@
   </p:option>
   <p:option name="mathtype2omml" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-      <p>Activates use of mathtype2mml extension (and mml2omml conversion. To be done ...)</p>
+      <p>Activates use of mathtype2mml extension (see docx2hub for selectable option values)</p>
+      <p>Default: no</p>
+      <p>If not set to 'no', the external resource hub2docx/xsl/omml/mml2omml.xsl is accessible via xmlcatalog.</p>
     </p:documentation>
   </p:option>
 
@@ -111,7 +113,7 @@
   <p:output port="modified-single-tree">
     <p:documentation>A /w:root document. This output is mostly for Schematron checks. If you want Schematron
     with srcpaths, invoke it with docx2hub-add-srcpath-attributes=yes</p:documentation>
-    <p:pipe port="result" step="export"/>
+    <p:pipe port="result" step="mml2omml"/>
   </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
@@ -266,10 +268,33 @@
     </p:input>
   </cx:eval>
   
-  <p:unwrap match="/cx:document[@port eq 'result']"/>
+  <p:unwrap match="/cx:document[@port eq 'result']" name="unwrap-result"/>
   
+  <p:choose name="mml2omml">
+    <p:when test="normalize-space($mathtype2omml)">
+      <p:output port="result" primary="true"/>
+      
+      <tr:xslt-mode msg="yes" mode="docx2hub:mml2omml" name="mml2omml-xslt">
+        <p:input port="parameters"><p:pipe step="single-tree" port="params" /></p:input>
+        <p:input port="stylesheet"><p:document href="http://transpect.io/docx_modify/xsl/mml2omml.xsl"/></p:input>
+        <p:input port="models"><p:empty/></p:input>
+        <p:with-option name="prefix" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/8')">
+          <p:pipe port="result" step="file-uri"/>
+        </p:with-option>
+        <p:with-option name="debug" select="$debug"/>
+        <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+        <p:with-param name="mathtype2omml" select="$mathtype2omml"/>
+      </tr:xslt-mode>
+
+    </p:when>
+    <p:otherwise>
+      <p:output port="result" primary="true"/>
+      <p:identity/>
+    </p:otherwise>
+  </p:choose>
+
   <tr:xslt-mode msg="yes" mode="docx2hub:export" name="export">
-    <p:input port="parameters"><p:pipe step="single-tree" port="params" /></p:input>
+    <p:input port="parameters"><p:pipe step="single-tree" port="params"/></p:input>
     <p:input port="stylesheet"><p:pipe port="xslt" step="docx_modify"/></p:input>
     <p:input port="models"><p:empty/></p:input>
     <p:with-option name="prefix" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/9')">
@@ -277,6 +302,7 @@
     </p:with-option>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-param name="mathtype2omml" select="$mathtype2omml"/>
     <p:with-param name="media-path" select="$media-path"/>
     <p:with-param name="srcpaths" select="'no'"/>
   </tr:xslt-mode>
