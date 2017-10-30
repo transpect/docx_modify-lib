@@ -19,6 +19,7 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:omml="http://schemas.openxmlformats.org/officeDocument/2006/math"
   exclude-result-prefixes="xs rel docx2hub c"
   version="2.0">
 
@@ -33,8 +34,22 @@
   </xsl:template>
 
   <xsl:template match="w:r[w:object[mml:math]]" mode="docx2hub:mml2omml">
-    <m:oMath>
-      <xsl:apply-templates select="w:object/mml:math" mode="mml"/>
-    </m:oMath>
+    <xsl:variable name="oMath" as="element(m:oMath)">
+      <m:oMath>
+        <xsl:apply-templates select="w:object/mml:math" mode="mml"/>
+      </m:oMath>
+    </xsl:variable>
+    <xsl:apply-templates select="$oMath" mode="docx2hub:mml2omml"/>
   </xsl:template>
+
+  <xsl:template match="omml:r[not(w:rPr)]" mode="docx2hub:mml2omml">
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <w:rPr>
+        <w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+      </w:rPr>
+      <xsl:apply-templates select="node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+
 </xsl:stylesheet>
