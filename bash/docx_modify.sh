@@ -98,7 +98,7 @@ if [ ! -z $MODIFY_XPL ]; then
 fi
 
 if [ -z $MATHTYPE2OMML ]; then
-  MATHTYPE2OMML=yes
+  MATHTYPE2OMML=no
 fi
 
 LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
