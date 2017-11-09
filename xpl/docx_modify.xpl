@@ -271,7 +271,7 @@
   <p:unwrap match="/cx:document[@port eq 'result']" name="unwrap-result"/>
   
   <p:choose name="mml2omml">
-    <p:when test="normalize-space($mathtype2omml)">
+    <p:when test="not($mathtype2omml = 'no')">
       <p:output port="result" primary="true"/>
       
       <tr:xslt-mode msg="yes" mode="docx2hub:mml2omml" name="mml2omml-xslt">
