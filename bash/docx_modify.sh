@@ -57,7 +57,7 @@ if [ -z $XSL ]; then
     echo "HEAP declaration, e.g., HEAP=2048m";
     echo "";
     echo "The parameter MATHTYPE2OMML (default: no) is for converting MathType formulas into OMML."
-    echo "If you just want you MathType formulas type converted, you may use the following invocation:";
+    echo "If you just want your MathType formulas type converted, you may use the following invocation:";
     echo "MATHTYPE2OMML=yes ./docx_modify.sh lib/xsl/identity.xsl /path/to/myfile.docx";
     exit 1;
 fi
