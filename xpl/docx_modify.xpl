@@ -68,7 +68,7 @@
   </p:option>
   <p:option name="mathtype2omml-cleanup" required="false" select="'yes'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-      <p>Deletion of converterd files of the MathType and WMF formulas in the new word container</p>
+      <p>Deletion of converted files of the MathType and WMF formulas in the new word container + Relationshop elements.</p>
       <p>Default: yes</p>
     </p:documentation>
   </p:option>
@@ -314,6 +314,8 @@
       <p:identity/>
     </p:otherwise>
   </p:choose>
+
+  <p:delete match="@srcpath"/>
 
   <tr:xslt-mode msg="yes" mode="docx2hub:export" name="export">
     <p:input port="parameters"><p:pipe step="single-tree" port="params"/></p:input>
