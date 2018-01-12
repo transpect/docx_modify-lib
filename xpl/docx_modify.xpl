@@ -66,6 +66,12 @@
       <p>If not set to 'no', the external resource hub2docx/xsl/omml/mml2omml.xsl is accessible via xmlcatalog.</p>
     </p:documentation>
   </p:option>
+  <p:option name="mathtype2omml-cleanup" required="false" select="'yes'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Deletion of converterd files of the MathType and WMF formulas in the new word container</p>
+      <p>Default: yes</p>
+    </p:documentation>
+  </p:option>
 
   <p:input port="xslt">
     <p:document href="../xsl/identity.xsl"/>
@@ -115,6 +121,10 @@
     with srcpaths, invoke it with docx2hub-add-srcpath-attributes=yes</p:documentation>
     <p:pipe port="result" step="mml2omml"/>
   </p:output>
+  <p:output port="report" sequence="true">
+    <p:documentation>A possible sequence of /c:errors and/or SVRL documents.</p:documentation>
+    <p:pipe port="report" step="template-single-tree"/>
+  </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl" />
@@ -140,14 +150,24 @@
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
     <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
+    <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
     <p:with-option name="docx" select="/*/@os-path"/>
   </docx2hub:single-tree-enhanced>
  
+  <tr:store-debug>
+    <p:with-option name="pipeline-step" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/single-tree')">
+      <p:pipe port="result" step="file-uri"/>
+    </p:with-option>
+    <p:with-option name="active" select="$debug" />
+    <p:with-option name="base-uri" select="$debug-dir-uri" />
+  </tr:store-debug>
+
   <p:sink/>
 
   <p:choose name="template-single-tree">
     <p:when test="normalize-space($template-file)">
       <p:output port="result" primary="true" sequence="true"/>
+      <p:output port="report" sequence="true"/>
       <p:output port="zip-manifest" sequence="true">
         <p:pipe port="zip-manifest" step="template-single-tree-1"/>
       </p:output>
@@ -170,6 +190,7 @@
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
         <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
+        <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
         <p:with-option name="docx" select="/*/@os-path"/>
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
           <p:documentation>We assume that the input file directory is writeable while the template file directory maybe not.</p:documentation>
@@ -179,6 +200,7 @@
     </p:when>
     <p:otherwise>
       <p:output port="result" primary="true"/>
+      <p:output port="report"/>
       <p:output port="zip-manifest" sequence="true">
         <p:empty/>
       </p:output>
