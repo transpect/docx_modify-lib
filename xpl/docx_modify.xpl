@@ -72,6 +72,12 @@
       <p>Default: yes</p>
     </p:documentation>
   </p:option>
+  <p:option name="mathtype-source-pi" required="false" select="'no'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Insertion of processing-instructions into mml:math element, containing information about the mml source (ole, wmf).</p>
+      <p>Default: no</p>
+    </p:documentation>
+  </p:option>
 
   <p:input port="xslt">
     <p:document href="../xsl/identity.xsl"/>
@@ -151,6 +157,7 @@
     <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
     <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
     <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
+    <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
     <p:with-option name="docx" select="/*/@os-path"/>
   </docx2hub:single-tree-enhanced>
  
@@ -191,6 +198,7 @@
         <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
+        <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
         <p:with-option name="docx" select="/*/@os-path"/>
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
           <p:documentation>We assume that the input file directory is writeable while the template file directory maybe not.</p:documentation>
