@@ -53,6 +53,12 @@
       <p>Default: no (saves time and memory)</p>
     </p:documentation>
   </p:option>
+  <p:option name="no-srcpaths-for-text-runs-threshold" select="'40000'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Limitation of nodes for adding srcpath attributes.</p>
+      <p>See also docx2hub (single-tree) documentation.</p>
+    </p:documentation>
+  </p:option>
   <p:option name="media-path" required="false" select="'none'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>If there are external media files that have to be included in the final docx file, media-path determines the path 
@@ -155,6 +161,7 @@
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
+    <p:with-option name="no-srcpaths-for-text-runs-threshold" select="$no-srcpaths-for-text-runs-threshold"/>
     <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
     <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
     <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
