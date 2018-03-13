@@ -13,7 +13,7 @@
   type="docx2hub:modify"
   >
   
-  <p:option name="file" required="true">
+  <p:option name="file" required="false" select="''">
     <p:documentation>As required by docx2hub</p:documentation>
   </p:option>
   <p:option name="template-file" select="''">
@@ -114,6 +114,14 @@
     <p:documentation>Arbitrary source XML. Example: Hub XML that is transformed to OOXML and then patched into the
     expanded docx template.</p:documentation>
   </p:input>
+  <p:input port="single-tree">
+    <p:documentation>Single xml input of the docx that used be modified.</p:documentation>
+    <p:empty/>
+  </p:input>
+  <p:input port="single-tree-manifest">
+    <p:documentation>Zip manifest of the single xml input of the docx that used be modified.</p:documentation>
+    <p:empty/>
+  </p:input>
   <p:input port="options">
     <p:documentation>Options to the modifying XProc pipeline, as /cx:options/cx:option[@name]/@value
       documents.</p:documentation>
@@ -152,22 +160,76 @@
     </p:input>
   </p:parameters>
   
-  <tr:file-uri name="file-uri">
-    <p:with-option name="filename" select="$file"/>
-  </tr:file-uri>
+  <p:choose name="file-uri">
+    <p:when test="matches($file, '\.do[ct][mx]$')">
+      <p:output port="result"/>
+      <tr:file-uri>
+        <p:with-option name="filename" select="$file"/>
+      </tr:file-uri>
+    </p:when>
+    <p:otherwise>
+      <p:output port="result"/>
+      <p:identity>
+        <p:input port="source">
+          <p:pipe port="single-tree" step="docx_modify"/>
+        </p:input>
+      </p:identity>
+      <tr:file-uri>
+        <p:with-option name="filename" select="/*/@local-href"/>
+      </tr:file-uri>
+    </p:otherwise>
+  </p:choose>
   
-  <docx2hub:single-tree-enhanced name="single-tree">
-    <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
-    <p:with-option name="no-srcpaths-for-text-runs-threshold" select="$no-srcpaths-for-text-runs-threshold"/>
-    <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
-    <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
-    <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
-    <p:with-option name="docx" select="/*/@os-path"/>
-  </docx2hub:single-tree-enhanced>
- 
+  <p:choose name="single-tree">
+    <p:when test="matches($file, '\.do[ct][mx]$')">
+      <p:output port="result">
+        <p:pipe port="result" step="single-tree-enhanced"/>
+      </p:output>
+      <p:output port="zip-manifest">
+        <p:pipe port="zip-manifest" step="single-tree-enhanced"/>
+      </p:output>
+      <p:output port="params">
+        <p:pipe port="params" step="single-tree-enhanced"/>
+      </p:output>
+    
+      <docx2hub:single-tree-enhanced name="single-tree-enhanced">
+        <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
+        <p:with-option name="debug" select="$debug"/>
+        <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+        <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
+        <p:with-option name="no-srcpaths-for-text-runs-threshold" select="$no-srcpaths-for-text-runs-threshold"/>
+        <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
+        <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
+        <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
+        <p:with-option name="docx" select="/*/@os-path"/>
+      </docx2hub:single-tree-enhanced>
+       
+    </p:when>
+    <p:otherwise>
+      <p:output port="result">
+        <p:pipe port="result" step="single-tree-ident"/>
+      </p:output>
+      <p:output port="zip-manifest">
+        <p:pipe port="single-tree-manifest" step="docx_modify"/>
+      </p:output>
+      <p:output port="params">
+        <p:pipe port="params" step="docx_modify"/>
+      </p:output>
+
+      <p:identity name="single-tree-ident">
+        <p:input port="source">
+          <p:pipe port="single-tree" step="docx_modify"/>
+        </p:input>
+      </p:identity>
+    </p:otherwise>
+  </p:choose>
+  
+  <p:identity>
+    <p:input port="source">
+      <p:pipe port="result" step="single-tree"/>
+    </p:input>
+  </p:identity>
+  
   <tr:store-debug>
     <p:with-option name="pipeline-step" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/single-tree')">
       <p:pipe port="result" step="file-uri"/>
