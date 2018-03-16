@@ -182,8 +182,6 @@
     </p:otherwise>
   </p:choose>
   
-  <p:sink/>
-  
   <p:choose name="single-tree">
     <p:when test="matches($file, '\.do[ct][mx]$')">
       <p:output port="result" primary="true">
@@ -207,7 +205,7 @@
         <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
         <p:with-option name="docx" select="/*/@os-path"/>
       </docx2hub:single-tree-enhanced>
-       
+       <p:sink/>
     </p:when>
     <p:otherwise>
       <p:output port="result" primary="true">
@@ -485,5 +483,5 @@
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
   </tr:zip>
-    
+
 </p:declare-step>
