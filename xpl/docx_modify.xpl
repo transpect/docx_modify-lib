@@ -182,6 +182,8 @@
     </p:otherwise>
   </p:choose>
   
+  <p:sink/>
+  
   <p:choose name="single-tree">
     <p:when test="matches($file, '\.do[ct][mx]$')">
       <p:output port="result" primary="true">
