@@ -15,6 +15,8 @@
   
   <p:option name="file" required="false" select="''">
     <p:documentation>As required by docx2hub</p:documentation>
+    <p:documentation>If there is already a single tree that you want to modify you can use the single-tree and 
+      single-tree-manifest input ports.</p:documentation>
   </p:option>
   <p:option name="template-file" select="''">
     <p:documentation>Another optional OOXML file that will serve as a template, i.e., static files will be taken
@@ -114,12 +116,12 @@
     <p:documentation>Arbitrary source XML. Example: Hub XML that is transformed to OOXML and then patched into the
     expanded docx template.</p:documentation>
   </p:input>
-  <p:input port="single-tree">
-    <p:documentation>Single xml input of the docx that used be modified.</p:documentation>
+  <p:input port="single-tree" sequence="true">
+    <p:documentation>Single xml input of the docx that used be modified INSTEAD OF input via file OPTION.</p:documentation>
     <p:empty/>
   </p:input>
-  <p:input port="single-tree-manifest">
-    <p:documentation>Zip manifest of the single xml input of the docx that used be modified.</p:documentation>
+  <p:input port="single-tree-manifest" sequence="true">
+    <p:documentation>Zip manifest of the single xml input of the docx that used be modified INSTEAD OF input via file OPTION.</p:documentation>
     <p:empty/>
   </p:input>
   <p:input port="options">
