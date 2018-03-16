@@ -164,13 +164,13 @@
   
   <p:choose name="file-uri">
     <p:when test="matches($file, '\.do[ct][mx]$')">
-      <p:output port="result"/>
+      <p:output port="result" primary="true"/>
       <tr:file-uri>
         <p:with-option name="filename" select="$file"/>
       </tr:file-uri>
     </p:when>
     <p:otherwise>
-      <p:output port="result"/>
+      <p:output port="result" primary="true"/>
       <p:identity>
         <p:input port="source">
           <p:pipe port="single-tree" step="docx_modify"/>
@@ -184,7 +184,7 @@
   
   <p:choose name="single-tree">
     <p:when test="matches($file, '\.do[ct][mx]$')">
-      <p:output port="result">
+      <p:output port="result" primary="true">
         <p:pipe port="result" step="single-tree-enhanced"/>
       </p:output>
       <p:output port="zip-manifest">
@@ -208,7 +208,7 @@
        
     </p:when>
     <p:otherwise>
-      <p:output port="result">
+      <p:output port="result" primary="true">
         <p:pipe port="result" step="single-tree-ident"/>
       </p:output>
       <p:output port="zip-manifest">
@@ -223,6 +223,7 @@
           <p:pipe port="single-tree" step="docx_modify"/>
         </p:input>
       </p:identity>
+      <p:sink/>
     </p:otherwise>
   </p:choose>
   
