@@ -13,22 +13,33 @@
 
   <xsl:template match="/c:zip-manifest" mode="update-zip-manifest">
     <xsl:copy>
-      <xsl:apply-templates 
-        select="@*,
-                collection()
-                  /w:root
-                    //c:file[@status eq 'modified-or-new-and-written-to-sys'
-                             or
-                             (
-                               not($media-path='none')
-                               and
-                               @status eq 'external-media-file'
-                             )],
-                collection()[1]
-                  /c:zip-manifest
-                    /c:entry[not(@name = (for $n in collection()/w:root//c:file/@name
-                                          return tr:unescape-uri($n)))]" 
-        mode="#current" />
+      <xsl:variable name="entries" as="node()">
+        <c:wrap>
+          <xsl:apply-templates 
+            select="@*,
+                    collection()
+                      /w:root
+                        //c:file[@status eq 'modified-or-new-and-written-to-sys'
+                                 or
+                                 (
+                                   not($media-path='none')
+                                   and
+                                   @status eq 'external-media-file'
+                                 )],
+                    collection()[1]
+                      /c:zip-manifest
+                        /c:entry[not(@name = (for $n in collection()/w:root//c:file/@name
+                                              return tr:unescape-uri($n)))]" 
+            mode="#current" />
+        </c:wrap>
+      </xsl:variable>
+      <xsl:variable name="significant-order-entries" as="node()*"
+      select="$entries/node()[matches(@name,'Content_Types')],
+        $entries/node()[matches(@name,'_rels/.rels')],
+        $entries/node()[matches(@name,'word/_rels/document.xml.rels')]">
+        <!-- The `file` utility detects docx-files by order of these inside a zip -->
+      </xsl:variable>
+      <xsl:sequence select="$entries/@*, $significant-order-entries, $entries/node() except $significant-order-entries"/>
     </xsl:copy>
   </xsl:template>
   
