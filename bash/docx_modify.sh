@@ -13,7 +13,7 @@ MODIFY_XPL="$( readlink -f "$3" )"
 XPL="$DIR"/docx_modify/xpl/docx_modify.xpl
 
 if [ -z $XSL ]; then
-    echo "Usage: [DEBUG=yes|no] [HEAP=xxxxm] [MATHTYPE2OMML=yes|no] docx_modify XSL DOCX [XPL]";
+    echo "Usage: [DEBUG=yes|no] [HEAP=xxxxm] [MATHTYPE2OMML=yes|no] docx_modify XSL DOCX [XPL] [DOCX2HUB_XSL]";
     echo "(The prefixed DEBUG=yes or HEAP=2048m work only if your shell is bash-compatible.)";
     echo "";
     echo "Sample invocation (identity with debug): ";
@@ -59,6 +59,9 @@ if [ -z $XSL ]; then
     echo "The parameter MATHTYPE2OMML (default: no) is for converting MathType formulas into OMML."
     echo "If you just want your MathType formulas type converted, you may use the following invocation:";
     echo "MATHTYPE2OMML=yes ./docx_modify.sh lib/xsl/identity.xsl /path/to/myfile.docx";
+    echo "";
+    echo "To modify the docx2hub single-tree use the parameter DOCX2HUB_XSL to point to your XSLT."
+    echo "(default: "$DIR"/docx2hub/xsl/main.xsl)"
     exit 1;
 fi
 
@@ -91,12 +94,16 @@ DEVNULL=/dev/null
 
 if $cygwin; then
   XSL=file:/$(cygpath -ma $XSL)
+  DOCX2HUB_XSL=file:/$(cygpath -ma $DOCX2HUB_XSL)
   DOCX=$(cygpath -ma $DOCX)
   DEBUGDIR=file:/$(cygpath -ma $DEBUGDIR)
   DEVNULL=$(cygpath -ma /dev/null)
   XPL=file:/$(cygpath -ma $XPL)
   if [ ! -z $MODIFY_XPL ]; then
     MODIFY_XPL=file:/$(cygpath -ma $MODIFY_XPL)
+  fi
+  if [ ! -z $DOCX2HUB_XSL ]; then
+    DOCX2HUB_XSL=file:/$(cygpath -ma $DOCX2HUB_XSL)
   fi
 fi
 
@@ -108,11 +115,15 @@ if [ -z $MATHTYPE2OMML ]; then
   MATHTYPE2OMML=no
 fi
 
-if [ "$DEBUG" == "yes" ]; then
-  echo LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" -o result="$DEVNULL" -o modified-single-tree="$DEVNULL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
+if [ -z $DOCX2HUB_XSL ]; then
+  DOCX2HUB_XSL="$DIR"/docx2hub/xsl/main.xsl
 fi
 
-LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" -o result="$DEVNULL" -o modified-single-tree="$DEVNULL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
+if [ "$DEBUG" == "yes" ]; then
+  echo LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" -i docx2hub-xslt=$DOCX2HUB_XSL -o result="$DEVNULL" -o modified-single-tree="$DEVNULL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
+fi
+
+LOCALDEFS=$LOCALDEFS HEAP=$HEAP $DIR/calabash/calabash.sh -D -i xslt="$XSL" -i docx2hub-xslt=$DOCX2HUB_XSL -o result="$DEVNULL" -o modified-single-tree="$DEVNULL" $MODIFY_XPL "$XPL" file="$DOCX" mathtype2omml=$MATHTYPE2OMML debug=$DEBUG debug-dir-uri=$DEBUGDIR
 if [ "$DEBUG" == "no" ]; then
   rm -rf $DOCX.tmp/
 fi

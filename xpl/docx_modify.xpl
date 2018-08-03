@@ -128,6 +128,10 @@
     <p:documentation>Options to the modifying XProc pipeline, as /cx:options/cx:option[@name]/@value
       documents.</p:documentation>
   </p:input>
+  <p:input port="docx2hub-xslt">
+    <p:document href="http://transpect.io/docx2hub/xsl/main.xsl"/>
+    <p:documentation>Main XSL file of docx2hub. To manipulate the single-tree, optionally.</p:documentation>
+  </p:input>
   <p:input port="update-zip-manifest-xslt">
     <p:document href="../xsl/update-zip-manifest.xsl"/>
     <p:documentation>An XSL that updates the original zip manifest, based on the updated single tree and possibly also
@@ -195,6 +199,9 @@
       </p:output>
     
       <docx2hub:single-tree-enhanced name="single-tree-enhanced">
+        <p:input port="xslt">
+          <p:pipe port="docx2hub-xslt" step="docx_modify"/>
+        </p:input>
         <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
@@ -264,6 +271,9 @@
       </tr:file-uri>
       
       <docx2hub:single-tree-enhanced name="template-single-tree-1">
+        <p:input port="xslt">
+          <p:pipe port="docx2hub-xslt" step="docx_modify"/>
+        </p:input>
         <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
