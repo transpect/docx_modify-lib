@@ -12,7 +12,7 @@
   version="2.0">
   
   <xsl:import href="identity.xsl"/>
-  
+  <xsl:import href="http://transpect.io/xslt-util/num/xsl/num.xsl"/>
   <xsl:import href="http://transpect.io/htmlreports/xsl/svrl2xsl.xsl"/>
 
   <xsl:variable name="report" select="collection()[/c:reports]"/>
@@ -37,14 +37,17 @@
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:if test="key('message-by-srcpath',@srcpath, $messages-grouped-by-type)">
-        <xsl:processing-instruction name="docx_modify_docVar_bookmark">
-          <xsl:value-of select="concat('ltx_schematron ', replace(key('message-by-srcpath',@srcpath, $messages-grouped-by-type)/@type,' ','_'))"/>
-        </xsl:processing-instruction>
-        <xsl:processing-instruction name="docx_modify_docVar">
-          <xsl:value-of select="concat('ltx_schematron ', replace(key('message-by-srcpath',@srcpath, $messages-grouped-by-type)/@type,' ','_'))"/>
-        </xsl:processing-instruction>
+        <xsl:for-each select="key('message-by-srcpath',@srcpath, $messages-grouped-by-type)">
+          <xsl:message select="current()"></xsl:message>
+          <xsl:processing-instruction name="docx_modify_docVar_bookmark">
+            <xsl:value-of select="concat('ltx_schematron ', replace(current()/@type,' ','_'))"/>
+          </xsl:processing-instruction>
+          <xsl:processing-instruction name="docx_modify_docVar">
+            <xsl:value-of select="concat('ltx_schematron ', replace(current()/@type,' ','_'), ' §$$§ ', string-join(current()/svrl:text/text()/normalize-space(),' ') ,' §$$§ ToDO:', string-join(current()/svrl:text/span[@class='todo'],''))"/>
+          </xsl:processing-instruction>
+        </xsl:for-each>
       </xsl:if>
-      <xsl:next-match/>
+      <xsl:apply-templates select="node()" mode="#current"/>
     </xsl:copy>
   </xsl:template>
   
@@ -64,6 +67,31 @@
       <xsl:variable name="num" as="xs:integer" select="$max-bookmark-id + xs:integer($matching-docVar/@_pos)"/>
       <w:bookmarkEnd w:id="{$num}"/> 
     </xsl:for-each>
+  </xsl:template>
+  
+  <xsl:function name="tr:pad" as="xs:string">
+    <xsl:param name="string"     as="xs:string"/>
+    <xsl:param name="width"     as="xs:integer"/>
+    <xsl:sequence select="string-join((for $i in (string-length($string) to $width - 1) return '0', $string), '')"/>
+  </xsl:function>
+  
+  <xsl:template match="processing-instruction()[name() = ('docx_modify_docVar', 'docx_modify_docVar_bookmark')]" mode="docx2hub:postprocess">
+    <xsl:param name="genIds" as="xs:string*" tunnel="yes"/>
+    <xsl:variable name="pos" select="index-of($genIds, generate-id())" as="xs:integer?"/>
+    <xsl:variable name="context" as="processing-instruction()" select="."/>
+    <xsl:analyze-string select="." regex="^\s*(\i\c*)\s+(.+)$">
+      <xsl:matching-substring>
+        <w:docVar w:name="{string-join((regex-group(1), string(tr:pad(xs:string(($pos,'0')[1]),5))[normalize-space()]), '_')}" w:val="{regex-group(2)}">
+          <xsl:if test="name($context) = 'docx_modify_docVar_bookmark'">
+            <xsl:attribute name="genId" select="generate-id($context)"/>
+            <xsl:attribute name="_pos" select="tr:pad(xs:string(($pos,'0')[1]),5)"/>
+          </xsl:if>
+        </w:docVar>
+      </xsl:matching-substring>
+      <xsl:non-matching-substring>
+        <w:docVar w:name="invalid_docVarName" w:val="{.}"/>
+      </xsl:non-matching-substring>
+    </xsl:analyze-string>
   </xsl:template>
   
 </xsl:stylesheet>
