@@ -48,6 +48,7 @@
       </ul>
     </p:documentation>
   </p:option>
+  <p:option name="indent" required="false" select="'true'"/>
   <p:option name="docx2hub-add-srcpath-attributes" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>Whether docx2hub adds srcpath attributes in mode insert-xpath to content elements or not. Example use: you have to 
@@ -241,9 +242,10 @@
   </p:identity>
   
   <tr:store-debug>
-    <p:with-option name="pipeline-step" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/single-tree')">
+    <p:with-option name="pipeline-step" select="concat('docx_modify/', replace(/*/@lastpath, '\.do[ct][mx]$', ''), '/single-tree_source')">
       <p:pipe port="result" step="file-uri"/>
     </p:with-option>
+    <p:with-option name="indent" select="'false'"/>
     <p:with-option name="active" select="$debug" />
     <p:with-option name="base-uri" select="$debug-dir-uri" />
   </tr:store-debug>
@@ -418,6 +420,7 @@
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-param name="mathtype2omml" select="$mathtype2omml"/>
     <p:with-param name="media-path" select="$media-path"/>
+    <p:with-option name="indent" select="$indent"/>
     <p:with-param name="srcpaths" select="'no'"/>
   </tr:xslt-mode>
   
