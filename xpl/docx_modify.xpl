@@ -87,6 +87,13 @@
       <p>Default: no</p>
     </p:documentation>
   </p:option>
+  <p:option name="docx2hub-insert-document-defaults" required="false" select="'no'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>Wether document default settings (i.e. language and font names) are inserted by docx2hub into single-tree or not.</p>
+      <p>Normally, we want to modify the entire word contents as is. The default value for docx2hub conversion is 'yes'.</p>
+      <p>Default: no</p>
+    </p:documentation>
+  </p:option>
 
   <p:input port="xslt">
     <p:document href="../xsl/identity.xsl"/>
@@ -211,6 +218,7 @@
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
         <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
+        <p:with-option name="insert-document-defaults" select="$docx2hub-insert-document-defaults"/>
         <p:with-option name="docx" select="/*/@os-path"/>
       </docx2hub:single-tree-enhanced>
        <p:sink/>
@@ -283,6 +291,7 @@
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
         <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
+        <p:with-option name="insert-document-defaults" select="$docx2hub-insert-document-defaults"/>
         <p:with-option name="docx" select="/*/@os-path"/>
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
           <p:documentation>We assume that the input file directory is writeable while the template file directory maybe not.</p:documentation>
