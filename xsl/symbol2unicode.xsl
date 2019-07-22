@@ -73,7 +73,7 @@
                         ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
                       ]/w:rFonts[@w:ascii]" mode="docx2hub:modify">
     <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
-      select="key('symbol-by-entity', ., docx2hub:font-map(@w:ascii))"/>
+      select="key('symbol-by-entity', parent::w:rPr/parent::*/w:t, docx2hub:font-map(@w:ascii))"/>
     <xsl:choose>
       <xsl:when test="$replacement-symbol-map-entry/@font">
         <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
