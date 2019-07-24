@@ -87,6 +87,12 @@
       <p>Default: no</p>
     </p:documentation>
   </p:option>
+  <p:option name="mml-space-handling" required="false" select="'char'">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <p>How to handle Mathtype-spacing in Mathml. Possible: 'char', 'mspace'.</p>
+      <p>Default for docx_modify: char (reproduce input as is, do not change thinspace to percentual mspace)</p>
+    </p:documentation>
+  </p:option>
   <p:option name="docx2hub-insert-document-defaults" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>Wether document default settings (i.e. language and font names) are inserted by docx2hub into single-tree or not.</p>
@@ -218,6 +224,7 @@
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
         <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
+        <p:with-option name="mml-space-handling" select="$mml-space-handling"/>
         <p:with-option name="insert-document-defaults" select="$docx2hub-insert-document-defaults"/>
         <p:with-option name="docx" select="/*/@os-path"/>
       </docx2hub:single-tree-enhanced>
@@ -291,6 +298,7 @@
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
         <p:with-option name="mathtype2mml-cleanup" select="$mathtype2omml-cleanup"/>
         <p:with-option name="mathtype-source-pi" select="$mathtype-source-pi"/>
+        <p:with-option name="mml-space-handling" select="$mml-space-handling"/>
         <p:with-option name="insert-document-defaults" select="$docx2hub-insert-document-defaults"/>
         <p:with-option name="docx" select="/*/@os-path"/>
         <p:with-option name="extract-dir" select="concat($file-uri, '.template.tmp')">
