@@ -48,6 +48,9 @@
       </ul>
     </p:documentation>
   </p:option>
+  <p:option name="extract-dir" select="''">
+    <p:documentation>Where $file will be unzipped (OS path, usually ending in .tmp)</p:documentation>
+  </p:option>
   <p:option name="indent" required="false" select="'true'"/>
   <p:option name="docx2hub-add-srcpath-attributes" required="false" select="'no'">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
@@ -185,6 +188,12 @@
       <p:output port="result" primary="true"/>
       <tr:file-uri>
         <p:with-option name="filename" select="$file"/>
+        <p:input port="resolver">
+          <p:document href="http://transpect.io/xslt-util/xslt-based-catalog-resolver/xsl/resolve-uri-by-catalog.xsl"/>
+        </p:input>
+        <p:input port="catalog">
+          <p:document href="http://this.transpect.io/xmlcatalog/catalog.xml"/>
+        </p:input>
       </tr:file-uri>
     </p:when>
     <p:otherwise>
@@ -219,6 +228,7 @@
         <p:with-option name="apply-changemarkup" select="$apply-changemarkup"/>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+        <p:with-option name="extract-dir" select="$extract-dir"/>
         <p:with-option name="srcpaths" select="$docx2hub-add-srcpath-attributes"/>
         <p:with-option name="no-srcpaths-for-text-runs-threshold" select="$no-srcpaths-for-text-runs-threshold"/>
         <p:with-option name="mathtype2mml" select="$mathtype2omml"/>
@@ -228,7 +238,7 @@
         <p:with-option name="insert-document-defaults" select="$docx2hub-insert-document-defaults"/>
         <p:with-option name="docx" select="/*/@os-path"/>
       </docx2hub:single-tree-enhanced>
-       <p:sink/>
+      <p:sink/>
     </p:when>
     <p:otherwise>
       <p:output port="result" primary="true">
