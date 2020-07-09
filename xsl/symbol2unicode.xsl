@@ -48,7 +48,7 @@
   </xsl:template>
 
   <xsl:template match="*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
-    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-t(.)"/>
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t(.)"/>
     <xsl:variable name="map" select="docx2hub:font-map($applied-font)" as="document-node(element(symbols))?"/>
     <xsl:variable name="resolved-unicode-char" as="attribute(char)?" select="(key('symbol-by-entity', ., $map)/@char)[1]"/>
     <xsl:choose>
@@ -87,7 +87,7 @@
   
   <xsl:function name="docx2hub:text-is-rFonts-only-symbol" as="xs:boolean">
     <xsl:param name="w-t_or_m-t" as="element()"/><!-- w:t or m:t only -->
-    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-t($w-t_or_m-t)"/>
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t($w-t_or_m-t)"/>
     <xsl:variable name="font-map" as="document-node(element(symbols))?" select="docx2hub:font-map($applied-font)"/>
     <xsl:sequence select="if (exists($applied-font) and exists($font-map)) 
                           then boolean(
