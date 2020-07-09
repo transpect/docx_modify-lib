@@ -4,6 +4,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:rel="http://schemas.openxmlformats.org/package/2006/relationships"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
   xmlns:docx2hub = "http://transpect.io/docx2hub"
   xmlns:css="http://www.w3.org/1996/css"
   exclude-result-prefixes="xs docx2hub css"
@@ -46,15 +47,15 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="w:t[docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
-    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t(.)"/>
+  <xsl:template match="*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-t(.)"/>
     <xsl:variable name="map" select="docx2hub:font-map($applied-font)" as="document-node(element(symbols))?"/>
     <xsl:variable name="resolved-unicode-char" as="attribute(char)?" select="(key('symbol-by-entity', ., $map)/@char)[1]"/>
     <xsl:choose>
       <xsl:when test="$resolved-unicode-char">
-        <w:t>
+        <xsl:copy>
           <xsl:value-of select="$resolved-unicode-char"/>
-        </w:t>
+        </xsl:copy>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="."/>
@@ -62,18 +63,18 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="w:t[
+  <xsl:template match="*[self::w:t or self::m:t][
                         not(docx2hub:text-is-rFonts-only-symbol(.))
-                        and ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
+                        and ../*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]
                       ]" mode="docx2hub:modify">
     <xsl:message select="'Help/Handle me: unmapped text with changed rFonts setting.'"/>
   </xsl:template>
 
   <xsl:template match="w:rPr[
-                        ../w:t[docx2hub:text-is-rFonts-only-symbol(.)]
+                        ../*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]
                       ]/w:rFonts[@w:ascii]" mode="docx2hub:modify">
     <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
-      select="key('symbol-by-entity', parent::w:rPr/parent::*/w:t, docx2hub:font-map(@w:ascii))"/>
+      select="key('symbol-by-entity', parent::w:rPr/parent::*/*[self::w:t or self::m:t], docx2hub:font-map(@w:ascii))"/>
     <xsl:choose>
       <xsl:when test="$replacement-symbol-map-entry/@font">
         <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
@@ -85,12 +86,12 @@
   </xsl:template>
   
   <xsl:function name="docx2hub:text-is-rFonts-only-symbol" as="xs:boolean">
-    <xsl:param name="w-t" as="element(w:t)"/>
-    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t($w-t)"/>
+    <xsl:param name="w-t_or_m-t" as="element()"/><!-- w:t or m:t only -->
+    <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-t($w-t_or_m-t)"/>
     <xsl:variable name="font-map" as="document-node(element(symbols))?" select="docx2hub:font-map($applied-font)"/>
     <xsl:sequence select="if (exists($applied-font) and exists($font-map)) 
                           then boolean(
-                                $w-t[
+                                $w-t_or_m-t[
                                   string-length(.) = 1 and 
                                   not(../w:lvlText) and 
                                   $applied-font = $docx2hub:symbol-font-names and
