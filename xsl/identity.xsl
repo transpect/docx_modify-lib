@@ -205,7 +205,7 @@
   <xsl:template match="@genId | @_pos" mode="docx2hub:export"/>
   
   <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
-    <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]/@Target">
+    <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]][@TargetMode='External']/@Target">
       <c:file xmlns="http://www.w3.org/ns/xproc-step" 
         status="external-media-file"
         name="{if (matches(., '^media')) then concat('word/', .) else concat('word/media/', .)}" />  
