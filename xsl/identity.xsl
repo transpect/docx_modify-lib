@@ -129,6 +129,14 @@
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
+  <xsl:template match="rel:Relationship[not($media-path='none')][@Type[matches(.,'image$')]][@TargetMode='External']" mode="docx2hub:export">
+    <xsl:copy>
+      <xsl:apply-templates select="@* except (@TargetMode, @Target)" mode="#current"/>
+      <xsl:attribute name="Target" select="concat('media/',tokenize(@Target,'/')[last()])"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  
   <xsl:template match="*[@xml:base]" mode="docx2hub:export">
     <xsl:result-document href="{@xml:base}">
       <xsl:next-match/>
@@ -208,7 +216,7 @@
     <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]][@TargetMode='External']/@Target">
       <c:file xmlns="http://www.w3.org/ns/xproc-step" 
         status="external-media-file"
-        name="{if (matches(., '^media')) then concat('word/', .) else concat('word/media/', .)}" />  
+        name="{if (matches(., '^media')) then concat('word/', .) else concat('word/media/', .)}" />
     </xsl:for-each>
     <xsl:next-match/>
   </xsl:template>
