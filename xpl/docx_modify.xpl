@@ -168,6 +168,10 @@
     <p:documentation>A possible sequence of /c:errors and/or SVRL documents.</p:documentation>
     <p:pipe port="report" step="template-single-tree"/>
   </p:output>
+  <p:output port="wrapped-ci-docs" primary="false">
+    <p:documentation>A document containing the w:root and zip manifest of the file for CI reasons</p:documentation>
+    <p:pipe port="result" step="wrapped-result-for-ci"/>
+  </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl" />
@@ -512,7 +516,16 @@
   </p:xslt>
   
   <p:sink/>
-    
+   
+  <p:wrap-sequence name="wrapped-result-for-ci" wrapper="c:wrap">
+    <p:input port="source">
+      <p:pipe port="result" step="zip-manifest"/>
+      <p:pipe port="result" step="mml2omml"/>
+    </p:input>
+  </p:wrap-sequence>
+  
+  <p:sink/>
+  
   <tr:zip name="zip" cx:depends-on="zip-file-uri" compression-method="deflated" compression-level="default" command="create">
     <p:with-option name="href" select="/c:result" >
       <p:pipe port="result" step="zip-file-uri"/>
