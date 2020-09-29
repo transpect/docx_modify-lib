@@ -148,8 +148,6 @@
              else replace(@xml:base, '^((/word/)|.)+?/((%5BContent_Types|word|_rels|docProps).*)$', '$3')}" />
   </xsl:template>
   
-  <xsl:template match="@xml:base" mode="docx2hub:export"/>
-
   <!-- create docVars from processing instructions named 'docx_modify_docVar'.
     Example <?docx_modify_docVar name value string?> → <w:docVar w:name="name" w:val="value string"/> 
     Please note that w:settings has an @xml:base attribute. The template matching *[xml:base] has higher priority. -->
