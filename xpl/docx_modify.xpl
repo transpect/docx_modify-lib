@@ -168,9 +168,9 @@
     <p:documentation>A possible sequence of /c:errors and/or SVRL documents.</p:documentation>
     <p:pipe port="report" step="template-single-tree"/>
   </p:output>
-  <p:output port="wrapped-ci-docs" primary="false">
-    <p:documentation>A document containing the w:root and zip manifest of the file for CI reasons</p:documentation>
-    <p:pipe port="result" step="wrapped-result-for-ci"/>
+  <p:output port="modified-manifest" primary="false">
+    <p:documentation>A document containing the modified zip manifest for CI/schematron reasons</p:documentation>
+    <p:pipe port="result" step="wrapped-manifest"/>
   </p:output>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
@@ -517,12 +517,11 @@
   
   <p:sink/>
    
-  <p:wrap-sequence name="wrapped-result-for-ci" wrapper="c:wrap">
+  <p:wrap name="wrapped-manifest" wrapper="c:wrap" match="/">
     <p:input port="source">
       <p:pipe port="result" step="zip-manifest"/>
-      <p:pipe port="result" step="mml2omml"/>
     </p:input>
-  </p:wrap-sequence>
+  </p:wrap>
   
   <p:sink/>
   
