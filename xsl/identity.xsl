@@ -125,7 +125,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="*[rel:Relationships] | w:docTypes" mode="docx2hub:export" priority="2">
+  <xsl:template match="*[rel:Relationships] | w:docTypes" mode="docx2hub:export">
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
