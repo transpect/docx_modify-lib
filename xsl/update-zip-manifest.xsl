@@ -53,9 +53,11 @@
   
   <xsl:template match="c:file" mode="update-zip-manifest">
     <xsl:variable name="path-prefix" as="xs:string?" select="concat('file:/', replace($media-path, '^file:/+', ''))"/>
-    <c:entry name="{if (@status eq 'external-media-file') then tr:unescape-uri(concat('word/media/',tokenize(@name,'/')[last()])) else tr:unescape-uri(@name)}" 
+    <c:entry name="{if (@status eq 'external-media-file') 
+                    then tr:unescape-uri(concat('word/media/',tokenize(@name,'/')[last()])) 
+                    else tr:unescape-uri(@name)}" 
       href="{if ((@status eq 'external-media-file')) 
-             then concat($path-prefix,'/', replace(@name, '^word/media/', '')) 
+             then concat($path-prefix,'/', tokenize(@name,'/')[last()]) 
              else concat($base-uri, @name)}" 
       compression-method="deflate" compression-level="default"/>
   </xsl:template>
