@@ -23,9 +23,7 @@
     from this file rather than from the original. Its single-tree representation will be supplied to the modifying
     pipeline as an additional input so that it can be merged with existing or newly generated content, its styles
     can be used in lieu of the original styles, etc. Its static files will be copied to the resulting file if they
-    are referenced in the resulting relationship files. 
-    Please note that you cannot generate docm or dotm files with this step because the resulting zip needs to be
-    digitally signed, which is a task that we cannot do yet with XProc.</p:documentation>
+    are referenced in the resulting relationship files.</p:documentation>
   </p:option>
   <p:option name="copy-from-template-file-regex" 
     select="'(^vba|\.bin$|/word/(theme|embeddings|glossary|media)|/customUI|/customXml|(_rels/)?customizations.xml(\.rels)?)'">
