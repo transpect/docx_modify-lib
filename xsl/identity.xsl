@@ -18,7 +18,8 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  exclude-result-prefixes="xs rel docx2hub c"
+  xmlns:hub="http://transpect.io/hub"
+  exclude-result-prefixes="xs rel docx2hub c hub"
   version="2.0">
 
   <xsl:param name="debug" select="'no'"/>
@@ -100,7 +101,7 @@
     <xsl:attribute name="mc:Ignorable" select="'w14 w15 wp14 w16se w16cid'"/>
   </xsl:template>
   
-  <xsl:template match="@xml:base"  mode="docx2hub:export"/>
+  <xsl:template match="@xml:base | @hub:*"  mode="docx2hub:export"/>
   
   <xsl:template match="w:root" mode="docx2hub:export" priority="2">
     <xsl:param name="new-content" as="element(*)*" tunnel="yes"/>
@@ -115,6 +116,9 @@
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
       <c:files>
+        <xsl:if test=".//rel:Relationship[@hub:copied = 'true']">
+          <xsl:attribute name="add-items-to-zip-manifest" select="'true'"/>
+        </xsl:if>
         <xsl:apply-templates select="node()" mode="#current">
           <xsl:with-param name="new-docVars" select="$new-docVars" tunnel="yes"/>
           <xsl:with-param name="max-bookmark-id" as="xs:integer" tunnel="yes" 
@@ -130,6 +134,7 @@
   </xsl:template>
   
   <xsl:template match="rel:Relationship[not($media-path='none')][@Type[matches(.,'image$')]][@TargetMode='External']" mode="docx2hub:export">
+    <xsl:message select="'RRRRRRR ', @Target"></xsl:message>
     <xsl:copy>
       <xsl:apply-templates select="@* except (@TargetMode, @Target)" mode="#current"/>
       <xsl:attribute name="Target" select="concat('media/',tokenize(@Target,'/')[last()])"/>
@@ -210,8 +215,14 @@
   
   <xsl:template match="@genId | @_pos" mode="docx2hub:export"/>
   
-  <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]][not($media-path='none')]" mode="docx2hub:export" priority="2.5">
-    <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]][@TargetMode='External']/@Target">
+  <xsl:template match="w:root/*[descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]]
+                               [not($media-path='none')
+                                or
+                                descendant-or-self::rel:Relationship/@hub:copied = 'true'
+                               ]" 
+                mode="docx2hub:export" priority="2.5">
+    <xsl:for-each select="descendant-or-self::rel:Relationship[@Type[matches(.,'image$')]]
+                                                              [@TargetMode='External' or @hub:copied = 'true']/@Target">
       <c:file xmlns="http://www.w3.org/ns/xproc-step" 
         status="external-media-file"
         name="{if (matches(., '^media')) then concat('word/', .) else concat('word/media/', .)}" />

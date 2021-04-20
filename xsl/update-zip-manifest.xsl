@@ -22,7 +22,11 @@
                         //c:file[@status eq 'modified-or-new-and-written-to-sys'
                                  or
                                  (
-                                   not($media-path='none')
+                                   (
+                                     not($media-path='none')
+                                     or 
+                                     ../@add-items-to-zip-manifest = 'true'
+                                   )
                                    and
                                    @status eq 'external-media-file'
                                  )],
@@ -53,10 +57,12 @@
   
   <xsl:template match="c:file" mode="update-zip-manifest">
     <xsl:variable name="path-prefix" as="xs:string?" select="concat('file:/', replace($media-path, '^file:/+', ''))"/>
+    <!-- c:files/@add-items-to-zip-manifest = 'true' means: the files (at least those with an absolute file URI in Hub)
+      have been copied to the extract directory using tr:copy-files --> 
     <c:entry name="{if (@status eq 'external-media-file') 
                     then tr:unescape-uri(concat('word/media/',tokenize(@name,'/')[last()])) 
                     else tr:unescape-uri(@name)}" 
-      href="{if ((@status eq 'external-media-file')) 
+      href="{if ((@status eq 'external-media-file' and not(../@add-items-to-zip-manifest = 'true'))) 
              then concat($path-prefix,'/', tokenize(@name,'/')[last()]) 
              else concat($base-uri, @name)}" 
       compression-method="deflate" compression-level="default"/>
