@@ -134,7 +134,6 @@
   </xsl:template>
   
   <xsl:template match="rel:Relationship[not($media-path='none')][@Type[matches(.,'image$')]][@TargetMode='External']" mode="docx2hub:export">
-    <xsl:message select="'RRRRRRR ', @Target"></xsl:message>
     <xsl:copy>
       <xsl:apply-templates select="@* except (@TargetMode, @Target)" mode="#current"/>
       <xsl:attribute name="Target" select="concat('media/',tokenize(@Target,'/')[last()])"/>
