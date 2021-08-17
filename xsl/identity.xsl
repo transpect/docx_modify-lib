@@ -142,8 +142,7 @@
   </xsl:template>
   
   <xsl:template match="*[@xml:base]" mode="docx2hub:export">
-    <!-- replace last '/' by '/./': fix for calabash v1.3.2/saxon v10.5 -->
-    <xsl:result-document href="{replace(@xml:base, '^(.+)(/[^/]+)$', '$1/./$2.xml')}">
+    <xsl:result-document href="{@xml:base}">
       <xsl:next-match/>
     </xsl:result-document>
     <c:file xmlns="http://www.w3.org/ns/xproc-step" 
