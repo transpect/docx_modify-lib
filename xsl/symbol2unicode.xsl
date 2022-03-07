@@ -47,7 +47,8 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
+  <xsl:template match="*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]]
+                        [docx2hub:text-is-rFonts-only-symbol(.)]" mode="docx2hub:modify">
     <xsl:variable name="applied-font" as="xs:string?" select="docx2hub:applied-font-for-w-t(.)"/>
     <xsl:variable name="map" select="docx2hub:font-map($applied-font)" as="document-node(element(symbols))?"/>
     <xsl:variable name="resolved-unicode-char" as="attribute(char)?" select="(key('symbol-by-entity', ., $map)/@char)[1]"/>
@@ -63,18 +64,18 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="*[self::w:t or self::m:t][
+  <xsl:template match="*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]][
                         not(docx2hub:text-is-rFonts-only-symbol(.))
-                        and ../*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]
+                        and ../*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]][docx2hub:text-is-rFonts-only-symbol(.)]
                       ]" mode="docx2hub:modify">
     <xsl:message select="'Help/Handle me: unmapped text with changed rFonts setting.'"/>
   </xsl:template>
 
   <xsl:template match="w:rPr[
-                        ../*[self::w:t or self::m:t][docx2hub:text-is-rFonts-only-symbol(.)]
+                        ../*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]][docx2hub:text-is-rFonts-only-symbol(.)]
                       ]/w:rFonts[@w:ascii]" mode="docx2hub:modify">
     <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
-      select="key('symbol-by-entity', parent::w:rPr/parent::*/*[self::w:t or self::m:t], docx2hub:font-map(@w:ascii))"/>
+      select="key('symbol-by-entity', parent::w:rPr/parent::*/*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]], docx2hub:font-map(@w:ascii))"/>
     <xsl:choose>
       <xsl:when test="$replacement-symbol-map-entry/@font">
         <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
