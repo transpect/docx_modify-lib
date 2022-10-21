@@ -74,8 +74,13 @@
   <xsl:template match="w:rPr[
                         ../*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]][docx2hub:text-is-rFonts-only-symbol(.)]
                       ]/w:rFonts[@w:ascii]" mode="docx2hub:modify">
-    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)?"
+    <xsl:variable name="replacement-symbol-map-entry" as="element(symbol)*"
       select="key('symbol-by-entity', parent::w:rPr/parent::*/*[self::w:t or self::m:t or self::w:instrText[string-length(.) = 1]], docx2hub:font-map(@w:ascii))"/>
+    <xsl:variable name="replacement-symbol" as="element(symbol)?"
+      select="(
+                $replacement-symbol-map-entry[name() = (concat('char-', $charmap-policy))],
+                $replacement-symbol-map-entry
+              )[1]"/>
     <xsl:choose>
       <xsl:when test="$replacement-symbol-map-entry/@font">
         <w:rFonts w:ascii="{$replacement-symbol-map-entry/@font}" w:hAnsi="{$replacement-symbol-map-entry/@font}" w:cs="{$replacement-symbol-map-entry/@font}"/>
