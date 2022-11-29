@@ -141,8 +141,13 @@
     </xsl:copy>
   </xsl:template>
   
+  <xsl:variable name="saxon-major-version" as="xs:integer"
+    select="xs:integer(replace(system-property('xsl:product-version'), '^\D*(\d+).+$', '$1'))"/>
+  
   <xsl:template match="*[@xml:base]" mode="docx2hub:export">
-    <xsl:result-document href="{@xml:base}">
+    <xsl:result-document href="{if ($saxon-major-version ge 10) 
+                                then concat(@xml:base, '?foo=bar')
+                                else @xml:base}">
       <xsl:next-match/>
     </xsl:result-document>
     <c:file xmlns="http://www.w3.org/ns/xproc-step" 
