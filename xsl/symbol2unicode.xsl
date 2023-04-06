@@ -7,13 +7,17 @@
   xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
   xmlns:docx2hub = "http://transpect.io/docx2hub"
   xmlns:css="http://www.w3.org/1996/css"
-  exclude-result-prefixes="xs docx2hub css"
+  xmlns:tr="http://transpect.io"
+  exclude-result-prefixes="css docx2hub tr xs"
   version="2.0">
   
   <xsl:import href="http://transpect.io/docx2hub/xsl/main.xsl"/>
   <xsl:import href="http://transpect.io/docx_modify/xsl/identity.xsl"/>
   
   <xsl:param name="charmap-policy" select="'msoffice'" as="xs:string"/>
+
+  <xsl:variable name="docx2hub:replace-unicodefont-symbol-by-text" as="xs:boolean"
+    select="true()"/>
   
   <xsl:template match="w:lvlText[../w:rPr/w:rFonts/@w:ascii=$docx2hub:symbol-font-names]" mode="docx2hub:modify">
     <xsl:variable name="replacement" as="item()*">
@@ -182,6 +186,33 @@
         </w:t>    
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:variable name="docx2hub:trusted-unicode-font-names" as="xs:string*"
+    select="('Cambria Math', 'Courier New', 'Times New Roman')"/>
+
+  <xsl:template match="w:r[$docx2hub:replace-unicodefont-symbol-by-text]
+                          [count(*[not(self::w:rPr)]) = 1]
+                          /w:sym[@w:font = $docx2hub:trusted-unicode-font-names]"
+    mode="docx2hub:modify" priority="0.5">
+    <xsl:if test="not(parent::w:r/w:rPr)">
+      <w:rPr>
+        <w:rFonts w:ascii="{@w:font}" w:hAnsi="{@w:font}" w:cs="{@w:font}"/>
+      </w:rPr>
+    </xsl:if>
+    <w:t>
+      <xsl:value-of select="codepoints-to-string(tr:hex-to-dec(@w:char))"/>
+    </w:t>
+  </xsl:template>
+  <xsl:template match="w:r[$docx2hub:replace-unicodefont-symbol-by-text]
+                          [count(*[not(self::w:rPr)]) = 1]
+                          [w:sym/@w:font = $docx2hub:trusted-unicode-font-names]
+                          /w:rPr"
+    mode="docx2hub:modify">
+    <w:rPr>
+      <xsl:apply-templates select="*" mode="#current"/>
+      <w:rFonts w:ascii="{../w:sym/@w:font}" w:hAnsi="{../w:sym/@w:font}" w:cs="{../w:sym/@w:font}"/>
+    </w:rPr>
   </xsl:template>
 
   <xsl:template match="processing-instruction()[name() = 'letex']" mode="docx2hub:modify">
