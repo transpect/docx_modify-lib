@@ -15,4 +15,6 @@
     <xsl:apply-templates select="." mode="docx2hub:apply-changemarkup"/>
   </xsl:template>
   
+  <xsl:template match="w:trackRevisions" mode="docx2hub:apply-changemarkup"/>
+  
 </xsl:stylesheet>
