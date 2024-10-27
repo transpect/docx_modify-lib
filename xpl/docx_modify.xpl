@@ -373,7 +373,7 @@
       <p:pipe port="result" step="file-uri"/>
     </p:with-param>
     <p:with-param name="debug" select="$debug"/>
-    <p:with-param name="debug-dir-uri" select="replace($debug-dir-uri, '^(.+)\?.*$', '$1')"/>
+    <p:with-param name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:input port="parameters"><p:empty/></p:input>
     <p:input port="source">
       <p:pipe step="docx_modify" port="options"/> 
@@ -387,7 +387,7 @@
           <xsl:template name="main">
             <cx:options>
               <cx:option name="debug" value="{$debug}"/>
-              <cx:option name="debug-dir-uri" value="{replace($debug-dir-uri, '^(.+)\?.*$', '$1')}"/>
+              <cx:option name="debug-dir-uri" value="{$debug-dir-uri}"/>
               <cx:option name="file" value="{$file}"/>
               <xsl:sequence select="collection()/cx:options/cx:option"/>
             </cx:options>
