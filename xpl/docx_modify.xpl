@@ -451,6 +451,7 @@
     <p:with-param name="media-path" select="$media-path"/>
     <p:with-option name="indent" select="$indent"/>
     <p:with-param name="srcpaths" select="'no'"/>
+    <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
   </tr:xslt-mode>
   
   <p:sink/>
