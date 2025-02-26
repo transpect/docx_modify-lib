@@ -427,6 +427,7 @@
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
         <p:with-param name="mathtype2omml" select="$mathtype2omml"/>
+        <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
       </tr:xslt-mode>
 
     </p:when>
