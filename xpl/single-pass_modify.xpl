@@ -36,6 +36,7 @@
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri">
       <p:empty/>
     </p:with-option>
+    <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
   </tr:xslt-mode>
   
 </p:declare-step>

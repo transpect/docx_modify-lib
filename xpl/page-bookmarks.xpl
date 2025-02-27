@@ -22,18 +22,21 @@
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
   </tr:xslt-mode>
   
   <tr:xslt-mode msg="yes" mode="bookmarkpagefinal" prefix="docx_modify/bookmarkpagefinal">
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
   </tr:xslt-mode>
   
   <tr:xslt-mode msg="yes" mode="listchange" prefix="docx_modify/listchange">
     <p:input port="stylesheet"><p:pipe port="stylesheet" step="modify"/></p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="adjust-doc-base-uri" select="'yes'"/>
   </tr:xslt-mode>
   
 </p:declare-step>
